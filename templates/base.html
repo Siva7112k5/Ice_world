@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pink Scoops - Premium Ice Cream Experience{% endblock %}</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Loading animation */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease;
+        }
+        
+        .preloader.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .preloader-content {
+            text-align: center;
+        }
+        
+        .preloader-icecream {
+            font-size: 5rem;
+            animation: preloaderFloat 1.5s ease-in-out infinite;
+        }
+        
+        .preloader-text {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--rich-pink);
+            margin-top: 1rem;
+            animation: preloaderPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes preloaderFloat {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+        
+        @keyframes preloaderPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <div class="preloader-icecream">🍦</div>
+            <div class="preloader-text">Pink Scoops</div>
+            <div style="margin-top: 1rem; color: #888;">Loading sweetness...</div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">🍦 Pink Scoops</h1>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>Home</a></li>
+                <li><a href="{{ url_for('menu') }}" {% if request.endpoint == 'menu' %}class="active"{% endif %}>Menu</a></li>
+                <li><a href="{{ url_for('order') }}" {% if request.endpoint == 'order' %}class="active"{% endif %}>Order</a></li>
+                <li><a href="{{ url_for('favorites') }}" {% if request.endpoint == 'favorites' %}class="active"{% endif %}>Favorites</a></li>
+                <li><a href="{{ url_for('about') }}" {% if request.endpoint == 'about' %}class="active"{% endif %}>About</a></li>
+                {% if session.user %}
+                    {% if session.user.role == 'admin' %}
+                        <li><a href="{{ url_for('admin_dashboard') }}">Admin</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}">Logout ({{ session.user.username }})</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}" {% if request.endpoint == 'login' %}class="active"{% endif %}>Login</a></li>
+                {% endif %}
+            </ul>
+            <div class="cart-icon-container">
+                <a href="{{ url_for('order') }}" class="cart-link">
+                    🛒
+                    <span class="cart-count" id="globalCartCount">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- JavaScript Files -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            mirror: false,
+            offset: 50
+        });
+        
+        // Preloader
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const preloader = document.getElementById('preloader');
+                if (preloader) {
+                    preloader.classList.add('hide');
+                }
+            }, 1000);
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

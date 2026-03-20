@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+
+{% block title %}Pink Scoops - Premium Ice Cream Experience{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section - 3D Premium Design -->
+<header class="hero">
+    <div class="hero-3d-container">
+        <!-- Left Content -->
+        <div class="hero-content" data-aos="fade-right" data-aos-duration="1000">
+            <h1 class="hero-title">
+                <span class="pink-text">Sweet Dreams</span><br>
+                <span class="pink-text">in Pink</span>
+            </h1>
+            
+            <p class="hero-subtitle">
+                Artisan ice cream with a blush of perfection. 
+                Made with love, served with smiles.
+            </p>
+            
+            <!-- Premium Badges -->
+            <div class="hero-badges">
+                <div class="premium-badge" data-aos="zoom-in" data-aos-delay="200">
+                    <span>🍓</span>
+                    <div>
+                        <p>100% Natural</p>
+                        <small>No artificial colors</small>
+                    </div>
+                </div>
+                <div class="premium-badge" data-aos="zoom-in" data-aos-delay="400">
+                    <span>🌸</span>
+                    <div>
+                        <p>Signature Pink</p>
+                        <small>Rose & strawberry</small>
+                    </div>
+                </div>
+                <div class="premium-badge" data-aos="zoom-in" data-aos-delay="600">
+                    <span>✨</span>
+                    <div>
+                        <p>Fast Delivery</p>
+                        <small>30 min or free</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CTA Buttons -->
+            <div class="hero-buttons" data-aos="fade-up" data-aos-delay="800">
+                <a href="{{ url_for('menu') }}" class="btn-premium">
+                    <span>Explore Menu</span>
+                    <span>→</span>
+                </a>
+                <a href="{{ url_for('about') }}" class="btn-outline-premium">
+                    <span>Our Story</span>
+                    <span>📖</span>
+                </a>
+            </div>
+            
+            <!-- Live Counter -->
+            <div style="display: flex; gap: 2rem; margin-top: 2rem;" data-aos="fade-up" data-aos-delay="1000">
+                <div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--rich-pink);">50K+</div>
+                    <div style="color: #888;">Happy Customers</div>
+                </div>
+                <div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--rich-pink);">25+</div>
+                    <div style="color: #888;">Premium Flavors</div>
+                </div>
+                <div>
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--rich-pink);">4.9★</div>
+                    <div style="color: #888;">Customer Rating</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Content - 3D Ice Cream Showcase -->
+        <div class="hero-3d-showcase" data-aos="fade-left" data-aos-duration="1000">
+            <div class="floating-icecream">
+                <div class="icecream-3d" style="top: 0; left: 0;">
+                    <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400" alt="Strawberry Ice Cream">
+                </div>
+                <div class="icecream-3d" style="top: 0; right: 0;">
+                    <img src="https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400" alt="Rose Ice Cream">
+                </div>
+                <div class="icecream-3d" style="bottom: 10%; left: 10%;">
+                    <img src="https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=400" alt="Pink Velvet">
+                </div>
+                <div class="icecream-3d" style="bottom: 30%; right: 10%;">
+                    <img src="https://images.unsplash.com/photo-1580915411954-282cb1b0d780?w=400" alt="Raspberry">
+                </div>
+                
+                <!-- Floating Particles -->
+                <div class="particle">🌸</div>
+                <div class="particle">🍓</div>
+                <div class="particle">✨</div>
+                <div class="particle">🍦</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Premium Features Section -->
+<section class="features">
+    <div class="section-header" data-aos="fade-up">
+        <span class="section-subtitle">Why Choose Us</span>
+        <h2>Experience the <span>Pink Difference</span></h2>
+        <p style="color: #666; font-size: 1.2rem; max-width: 600px; margin: 0 auto;">
+            We don't just make ice cream, we create moments of joy
+        </p>
+    </div>
+    
+    <div class="features-grid">
+        <div class="feature-card-premium" data-aos="flip-left" data-aos-delay="100">
+            <div class="feature-icon-3d">🍨</div>
+            <h3>Artisan Crafted</h3>
+            <p>Small batch production using traditional Italian techniques for the creamiest texture.</p>
+            <div class="feature-stats">
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Natural</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24h</div>
+                    <div class="stat-label">Fresh</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="feature-card-premium" data-aos="flip-left" data-aos-delay="300">
+            <div class="feature-icon-3d">🌸</div>
+            <h3>Signature Flavors</h3>
+            <p>Unique pink-inspired flavors you won't find anywhere else, made with real flowers.</p>
+            <div class="feature-stats">
+                <div class="stat-item">
+                    <div class="stat-number">25+</div>
+                    <div class="stat-label">Flavors</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Seasonal</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="feature-card-premium" data-aos="flip-left" data-aos-delay="500">
+            <div class="feature-icon-3d">✨</div>
+            <h3>Premium Experience</h3>
+            <p>From packaging to delivery, every detail is designed to make you smile.</p>
+            <div class="feature-stats">
+                <div class="stat-item">
+                    <div class="stat-number">4.9★</div>
+                    <div class="stat-label">Rating</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5k+</div>
+                    <div class="stat-label">Reviews</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Premium Special Offers -->
+<section class="special-offers-premium">
+    <div class="offers-header" data-aos="fade-up">
+        <h2>Today's Sweet Deals</h2>
+        <p>Limited time offers - Grab them before they melt! 🍦</p>
+    </div>
+    
+    <div class="offer-grid-premium">
+        <div class="offer-card-premium" data-aos="zoom-in" data-aos-delay="100">
+            <div class="offer-badge-premium">
+                <span>-20%</span>
+            </div>
+            <div class="offer-icon">🍓</div>
+            <h4>Strawberry Bliss</h4>
+            <p>Buy 2 scoops, get 1 free + extra sprinkles</p>
+            <div class="offer-price">
+                ₹159 <small>was ₹199</small>
+            </div>
+            <a href="{{ url_for('menu') }}" class="btn-premium" style="display: inline-block; padding: 0.8rem 2rem; font-size: 1rem;">
+                Order Now
+            </a>
+        </div>
+        
+        <div class="offer-card-premium" data-aos="zoom-in" data-aos-delay="300">
+            <div class="offer-badge-premium">
+                <span>NEW</span>
+            </div>
+            <div class="offer-icon">🐉</div>
+            <h4>Dragon Fruit</h4>
+            <p>Limited edition - First 100 orders get free topping</p>
+            <div class="offer-price">
+                ₹209 <small>limited</small>
+            </div>
+            <a href="{{ url_for('menu') }}" class="btn-premium" style="display: inline-block; padding: 0.8rem 2rem; font-size: 1rem;">
+                Try Now
+            </a>
+        </div>
+        
+        <div class="offer-card-premium" data-aos="zoom-in" data-aos-delay="500">
+            <div class="offer-badge-premium">
+                <span>BOGO</span>
+            </div>
+            <div class="offer-icon">🌸</div>
+            <h4>Rose Petal</h4>
+            <p>Buy one get one free on all rose flavors</p>
+            <div class="offer-price">
+                ₹199 <small>for 2</small>
+            </div>
+            <a href="{{ url_for('menu') }}" class="btn-premium" style="display: inline-block; padding: 0.8rem 2rem; font-size: 1rem;">
+                Get Offer
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Instagram Gallery -->
+<section class="instagram-gallery">
+    <div class="section-header" data-aos="fade-up">
+        <span class="section-subtitle">#PinkScoops</span>
+        <h2>Sweet <span>Moments</span></h2>
+        <p style="color: #666;">Tag us for a chance to be featured! 📸</p>
+    </div>
+    
+    <div class="gallery-grid">
+        <div class="gallery-item" data-aos="zoom-in" data-aos-delay="100">
+            <img src="https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=400" alt="Ice Cream">
+            <div class="gallery-overlay">
+                <span>❤️ 2.5k</span>
+            </div>
+        </div>
+        <div class="gallery-item" data-aos="zoom-in" data-aos-delay="200">
+            <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400" alt="Ice Cream">
+            <div class="gallery-overlay">
+                <span>❤️ 1.8k</span>
+            </div>
+        </div>
+        <div class="gallery-item" data-aos="zoom-in" data-aos-delay="300">
+            <img src="https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=400" alt="Ice Cream">
+            <div class="gallery-overlay">
+                <span>❤️ 3.2k</span>
+            </div>
+        </div>
+        <div class="gallery-item" data-aos="zoom-in" data-aos-delay="400">
+            <img src="https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400" alt="Ice Cream">
+            <div class="gallery-overlay">
+                <span>❤️ 1.2k</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <div class="section-header" data-aos="fade-up">
+        <span class="section-subtitle">Happy Scoopers</span>
+        <h2>What Our <span>Customers Say</span></h2>
+    </div>
+    
+    <div class="testimonial-grid">
+        <div class="testimonial-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="testimonial-rating">★★★★★</div>
+            <p class="testimonial-text">
+                "Best ice cream I've ever had! The strawberry bliss is absolutely divine. 
+                You can really taste the real fruits. Will definitely order again!"
+            </p>
+            <div class="testimonial-author">
+                <div class="author-avatar">S</div>
+                <div class="author-info">
+                    <h5>Sarah Johnson</h5>
+                    <p>Food Blogger</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="testimonial-rating">★★★★★</div>
+            <p class="testimonial-text">
+                "The packaging is so pretty and the ice cream arrived perfectly frozen. 
+                Love the pink theme and the rose petal flavor is to die for! 🌸"
+            </p>
+            <div class="testimonial-author">
+                <div class="author-avatar">M</div>
+                <div class="author-info">
+                    <h5>Michelle Chen</h5>
+                    <p>Verified Buyer</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="testimonial-card" data-aos="fade-left" data-aos-delay="500">
+            <div class="testimonial-rating">★★★★★</div>
+            <p class="testimonial-text">
+                "Ordered for my daughter's birthday and everyone loved it! 
+                Fast delivery and the ice cream was super creamy. New favorite spot!"
+            </p>
+            <div class="testimonial-author">
+                <div class="author-avatar">D</div>
+                <div class="author-info">
+                    <h5>David Kim</h5>
+                    <p>Happy Dad</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Premium Newsletter -->
+<section class="newsletter-premium">
+    <div class="newsletter-content-premium" data-aos="zoom-in">
+        <h3>Sweet Updates</h3>
+        <p>Subscribe for exclusive flavors, special offers & sweet surprises!</p>
+        
+        <form class="newsletter-form-premium" id="premiumNewsletterForm">
+            <input type="email" placeholder="Your email address" required>
+            <button type="submit">Subscribe Now 🍦</button>
+        </form>
+        
+        <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.8;">
+            ✨ Get 10% off your first order when you subscribe
+        </p>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+<script>
+    // Premium Newsletter Form
+    document.getElementById('premiumNewsletterForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = this.querySelector('input[type="email"]').value;
+        showNotification(`✨ Thanks for subscribing! Check ${email} for your 10% off code!`, 'success');
+        this.reset();
+    });
+    
+    // Parallax effect on hero
+    window.addEventListener('scroll', function() {
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            const scrolled = window.pageYOffset;
+            hero.style.backgroundPositionY = (scrolled * 0.5) + 'px';
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,473 @@
+/* ===== SUPER PREMIUM NOTIFICATION SYSTEM ===== */
+:root {
+    --noti-success: linear-gradient(135deg, #00b894, #00cec9);
+    --noti-info: linear-gradient(135deg, #ff4d6d, #ff8cae);
+    --noti-warning: linear-gradient(135deg, #fdcb6e, #ffeaa7);
+    --noti-error: linear-gradient(135deg, #d63031, #e17055);
+    --noti-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    --noti-glow: 0 0 30px rgba(255, 77, 109, 0.3);
+}
+
+/* ===== NOTIFICATION CONTAINER ===== */
+.notification-container {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+    width: 100%;
+    pointer-events: none;
+}
+
+/* ===== PREMIUM NOTIFICATION CARD ===== */
+.notification {
+    position: relative;
+    background: white;
+    border-radius: 24px;
+    padding: 0;
+    margin-bottom: 0;
+    box-shadow: var(--noti-shadow);
+    display: flex;
+    align-items: stretch;
+    transform: translateX(120%) scale(0.8);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 0;
+    pointer-events: auto;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    overflow: hidden;
+    max-width: 400px;
+    width: 100%;
+}
+
+.notification.show {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+}
+
+/* ===== NOTIFICATION COLOR VARIANTS ===== */
+.notification-success {
+    border-left: 6px solid #00b894;
+}
+
+.notification-info {
+    border-left: 6px solid #ff4d6d;
+}
+
+.notification-warning {
+    border-left: 6px solid #fdcb6e;
+}
+
+.notification-error {
+    border-left: 6px solid #d63031;
+}
+
+/* ===== NOTIFICATION ICON SECTION ===== */
+.notification-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(145deg, #fff8f9, #ffffff);
+    border-radius: 20px 0 0 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.notification-icon-wrapper::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    animation: notiRotate 10s linear infinite;
+}
+
+.notification-icon {
+    font-size: 2.2rem;
+    position: relative;
+    z-index: 2;
+    animation: notiBounce 1s ease infinite;
+}
+
+/* ===== NOTIFICATION CONTENT ===== */
+.notification-content {
+    flex: 1;
+    padding: 18px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.notification-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-title i {
+    color: #ff4d6d;
+    font-size: 1rem;
+}
+
+.notification-message {
+    font-size: 0.95rem;
+    color: #636e72;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    color: #b2bec3;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.notification-time i {
+    font-size: 0.7rem;
+}
+
+/* ===== NOTIFICATION ACTIONS ===== */
+.notification-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.notification-btn {
+    background: linear-gradient(135deg, #ff4d6d, #ff8cae);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.notification-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 77, 109, 0.3);
+}
+
+.notification-close {
+    background: transparent;
+    border: none;
+    color: #b2bec3;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 5px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.notification-close:hover {
+    color: #ff4d6d;
+    transform: rotate(90deg);
+}
+
+/* ===== PRODUCT PREVIEW NOTIFICATION ===== */
+.notification-product {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 20px;
+    margin-top: 10px;
+    border: 1px solid rgba(255, 77, 109, 0.1);
+}
+
+.product-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(255, 77, 109, 0.2);
+}
+
+.product-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ff4d6d;
+    margin-bottom: 3px;
+}
+
+.product-desc {
+    font-size: 0.8rem;
+    color: #636e72;
+    display: flex;
+    gap: 10px;
+}
+
+.product-price {
+    font-weight: 700;
+    color: #ff4d6d;
+}
+
+/* ===== CART SUMMARY NOTIFICATION ===== */
+.notification-cart-summary {
+    background: linear-gradient(145deg, #fff8f9, #ffffff);
+    border-radius: 20px;
+    padding: 15px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-total-label {
+    color: #636e72;
+    font-size: 0.9rem;
+}
+
+.cart-total-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #ff4d6d;
+}
+
+.view-cart-link {
+    background: linear-gradient(135deg, #ff4d6d, #ff8cae);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+}
+
+.view-cart-link:hover {
+    transform: translateX(5px);
+    box-shadow: 0 10px 20px rgba(255, 77, 109, 0.3);
+}
+
+/* ===== PROGRESS BAR NOTIFICATION ===== */
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 77, 109, 0.1);
+    overflow: hidden;
+}
+
+.notification-progress-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ff4d6d, #ff8cae);
+    animation: notiProgress 3s linear forwards;
+    transform-origin: left;
+}
+
+/* ===== POSITION VARIANTS ===== */
+.notification-container.top-left {
+    top: 30px;
+    right: auto;
+    left: 30px;
+}
+
+.notification-container.bottom-right {
+    top: auto;
+    bottom: 30px;
+    right: 30px;
+}
+
+.notification-container.bottom-left {
+    top: auto;
+    bottom: 30px;
+    right: auto;
+    left: 30px;
+}
+
+.notification-container.center {
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+}
+
+/* ===== STACKED NOTIFICATIONS ===== */
+.notification + .notification {
+    margin-top: 10px;
+}
+
+.notification:nth-child(2) {
+    transform: translateX(120%) scale(0.9);
+}
+
+.notification:nth-child(3) {
+    transform: translateX(120%) scale(0.8);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes notiSlideIn {
+    from {
+        transform: translateX(120%) scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes notiSlideOut {
+    from {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(120%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+@keyframes notiBounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+@keyframes notiRotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes notiProgress {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+@keyframes notiPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(255, 77, 109, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(255, 77, 109, 0);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .notification-container {
+        top: 20px;
+        right: 20px;
+        left: 20px;
+        max-width: none;
+    }
+    
+    .notification {
+        max-width: 100%;
+    }
+    
+    .notification-icon-wrapper {
+        padding: 15px;
+    }
+    
+    .notification-icon {
+        font-size: 1.8rem;
+    }
+    
+    .notification-actions {
+        padding: 0 15px;
+    }
+    
+    .notification-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .notification {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .notification-icon-wrapper {
+        border-radius: 20px 20px 0 0;
+        padding: 10px;
+    }
+    
+    .notification-actions {
+        padding: 15px;
+        justify-content: flex-end;
+    }
+    
+    .product-thumb {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* ===== DARK MODE SUPPORT ===== */
+@media (prefers-color-scheme: dark) {
+    .notification {
+        background: rgba(30, 30, 40, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .notification-title {
+        color: #ffffff;
+    }
+    
+    .notification-message {
+        color: #b2bec3;
+    }
+    
+    .notification-icon-wrapper {
+        background: linear-gradient(145deg, #2d3436, #1e1e28);
+    }
+    
+    .product-info .product-name {
+        color: #ff8cae;
+    }
+}
