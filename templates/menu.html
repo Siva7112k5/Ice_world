@@ -1,0 +1,1230 @@
+{% extends "base.html" %}
+
+{% block title %}Premium Menu | Pink Scoops Ice Cream{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Menu Hero Section */
+    .menu-hero {
+        background: linear-gradient(145deg, #fff0f3, #ffffff);
+        padding: 4rem 2rem;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+    }
+    
+    .menu-hero::before {
+        content: "🍦🍨🍦🍨🍦";
+        position: absolute;
+        font-size: 12rem;
+        white-space: nowrap;
+        color: rgba(255, 77, 109, 0.03);
+        animation: menuFloatBackground 40s linear infinite;
+        transform: rotate(-15deg);
+        top: -20%;
+        left: -10%;
+        pointer-events: none;
+    }
+    
+    .menu-hero-content {
+        position: relative;
+        z-index: 10;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .menu-hero h1 {
+        font-size: 4rem;
+        font-weight: 800;
+        color: #ff4d6d;
+        margin-bottom: 1rem;
+        text-shadow: 0 10px 20px rgba(255, 77, 109, 0.2);
+    }
+    
+    .menu-hero p {
+        font-size: 1.3rem;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    
+    .menu-hero-badge {
+        display: inline-block;
+        background: rgba(255, 77, 109, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        border: 1px solid rgba(255, 77, 109, 0.2);
+        animation: menuPulse 2s infinite;
+    }
+    
+    .menu-hero-badge span {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #ff4d6d;
+    }
+    
+    /* Search Section */
+    .menu-search-section {
+        background: #ffffff;
+        padding: 2rem 2rem 3rem;
+        position: relative;
+        margin-top: -2rem;
+        z-index: 20;
+    }
+    
+    .menu-search-container {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    .menu-search-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: #ffffff;
+        border-radius: 60px;
+        box-shadow: 0 15px 35px rgba(255, 77, 109, 0.1);
+        padding: 0.5rem;
+        border: 2px solid transparent;
+        transition: all 0.4s ease;
+    }
+    
+    .menu-search-wrapper:focus-within {
+        border-color: #ff4d6d;
+        box-shadow: 0 20px 40px rgba(255, 77, 109, 0.2);
+        transform: scale(1.02);
+    }
+    
+    .menu-search-icon {
+        font-size: 1.5rem;
+        padding: 0 1rem;
+        color: #ff4d6d;
+    }
+    
+    .menu-search-input {
+        flex: 1;
+        padding: 1.2rem 0.5rem;
+        border: none;
+        font-size: 1.1rem;
+        background: transparent;
+        color: #333333;
+    }
+    
+    .menu-search-input:focus {
+        outline: none;
+    }
+    
+    .menu-search-input::placeholder {
+        color: #999999;
+    }
+    
+    .menu-search-btn {
+        background: linear-gradient(135deg, #ff4d6d, #ff8cae);
+        color: #ffffff;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+    
+    .menu-search-btn:hover {
+        transform: scale(0.98);
+        box-shadow: 0 10px 25px rgba(255, 77, 109, 0.3);
+    }
+    
+    /* Filter Section */
+    .menu-filter-section {
+        padding: 2rem 2rem 3rem;
+        background: linear-gradient(to bottom, #ffffff, #fff8f9);
+    }
+    
+    .menu-filter-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .menu-filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .menu-filter-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .menu-filter-title h3 {
+        font-size: 1.5rem;
+        color: #333333;
+        font-weight: 600;
+    }
+    
+    .menu-filter-title span {
+        background: #ff4d6d;
+        color: #ffffff;
+        padding: 0.3rem 1rem;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .menu-filter-grid {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .menu-filter-btn {
+        background: #ffffff;
+        border: 2px solid rgba(255, 77, 109, 0.2);
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #555555;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .menu-filter-btn:hover {
+        border-color: #ff4d6d;
+        color: #ff4d6d;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255, 77, 109, 0.15);
+    }
+    
+    .menu-filter-btn.active {
+        background: linear-gradient(135deg, #ff4d6d, #ff8cae);
+        border-color: transparent;
+        color: #ffffff;
+        box-shadow: 0 10px 25px rgba(255, 77, 109, 0.3);
+    }
+    
+    /* Menu Grid Section */
+    .menu-grid-section {
+        padding: 3rem 2rem 6rem;
+        background: #ffffff;
+    }
+    
+    .menu-grid-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .menu-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3rem;
+        padding: 1rem 2rem;
+        background: rgba(255, 77, 109, 0.03);
+        border-radius: 20px;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .menu-stats-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .menu-stats-icon {
+        font-size: 2rem;
+    }
+    
+    .menu-stats-info h4 {
+        font-size: 1.2rem;
+        color: #333333;
+        margin-bottom: 0.2rem;
+    }
+    
+    .menu-stats-info p {
+        color: #888888;
+        font-size: 0.9rem;
+    }
+    
+    .menu-sort-select {
+        padding: 0.8rem 1.5rem;
+        border: 2px solid rgba(255, 77, 109, 0.1);
+        border-radius: 30px;
+        font-size: 0.95rem;
+        color: #333333;
+        background: #ffffff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .menu-sort-select:focus {
+        outline: none;
+        border-color: #ff4d6d;
+    }
+    
+    /* Menu Grid - 4 columns on large screens */
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+    }
+    
+    /* Menu Card */
+    .menu-card {
+        background: #ffffff;
+        border-radius: 35px;
+        padding: 2rem 1.8rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        border: 1px solid rgba(255, 77, 109, 0.1);
+        animation: menuCardAppear 0.6s ease;
+    }
+    
+    .menu-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 30px 50px rgba(255, 77, 109, 0.15);
+        border-color: rgba(255, 77, 109, 0.3);
+    }
+    
+    .menu-card-badges {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.2rem;
+    }
+    
+    .menu-favorite-btn {
+        background: none;
+        border: none;
+        font-size: 1.8rem;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        padding: 0.2rem;
+        line-height: 1;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .menu-favorite-btn:hover {
+        transform: scale(1.2);
+    }
+    
+    .menu-favorite-btn.active {
+        animation: menuHeartBeat 0.4s ease;
+    }
+    
+    .menu-rating-badge {
+        background: linear-gradient(135deg, #fff0f3, #ffffff);
+        padding: 0.4rem 1rem;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        border: 1px solid rgba(255, 77, 109, 0.2);
+    }
+    
+    .menu-rating-badge span {
+        color: #ffd700;
+        font-size: 1rem;
+    }
+    
+    .menu-rating-badge small {
+        color: #666666;
+        font-weight: 600;
+    }
+    
+    .menu-card-image-wrapper {
+        position: relative;
+        margin-bottom: 1.5rem;
+        border-radius: 25px;
+        overflow: hidden;
+        aspect-ratio: 1 / 1;
+        cursor: pointer;
+    }
+    
+    .menu-card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.8s ease;
+    }
+    
+    .menu-card:hover .menu-card-image {
+        transform: scale(1.1);
+    }
+    
+    .menu-card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(145deg, rgba(255, 77, 109, 0.95), rgba(255, 140, 174, 0.95));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        border-radius: 25px;
+        cursor: pointer;
+        z-index: 20;
+    }
+    
+    .menu-card:hover .menu-card-overlay {
+        opacity: 1;
+    }
+    
+    .menu-card-quick-view {
+        background: white;
+        color: #ff4d6d;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transform: translateY(20px);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        border: 2px solid white;
+        letter-spacing: 1px;
+        cursor: pointer;
+        z-index: 30;
+        pointer-events: auto;
+    }
+    
+    .menu-card-quick-view:hover {
+        background: #ff4d6d;
+        color: white;
+        transform: translateY(0) scale(1.05);
+        border-color: #ff4d6d;
+    }
+    
+    .menu-card-quick-view i {
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .menu-card-quick-view:hover i {
+        transform: rotate(90deg);
+    }
+    
+    .menu-card:hover .menu-card-quick-view {
+        transform: translateY(0);
+    }
+    
+    .menu-card-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #ff4d6d;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .menu-card:hover .menu-card-title {
+        transform: translateX(5px);
+    }
+    
+    .menu-card-desc {
+        color: #666666;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+    
+    .menu-card-price {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .menu-current-price {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #ff4d6d;
+    }
+    
+    .menu-old-price {
+        font-size: 1.1rem;
+        color: #999999;
+        text-decoration: line-through;
+    }
+    
+    .menu-price-unit {
+        font-size: 0.9rem;
+        color: #888888;
+        font-weight: normal;
+    }
+    
+    .menu-customize-section {
+        background: linear-gradient(145deg, #fff8f9, #ffffff);
+        padding: 1.5rem;
+        border-radius: 25px;
+        margin: 1rem 0;
+        border: 1px solid rgba(255, 77, 109, 0.1);
+        transition: all 0.4s ease;
+    }
+    
+    .menu-card:hover .menu-customize-section {
+        background: #ffffff;
+        border-color: rgba(255, 77, 109, 0.2);
+        box-shadow: 0 10px 25px rgba(255, 77, 109, 0.05);
+    }
+    
+    .menu-customize-group {
+        margin-bottom: 1rem;
+    }
+    
+    .menu-customize-group:last-child {
+        margin-bottom: 0;
+    }
+    
+    .menu-customize-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        color: #555555;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .menu-customize-label span {
+        font-size: 1.2rem;
+    }
+    
+    .menu-customize-select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid rgba(255, 77, 109, 0.1);
+        border-radius: 20px;
+        font-size: 0.95rem;
+        color: #333333;
+        background: #ffffff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='%23ff4d6d'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+    }
+    
+    .menu-customize-select:focus {
+        outline: none;
+        border-color: #ff4d6d;
+        box-shadow: 0 0 0 4px rgba(255, 77, 109, 0.1);
+    }
+    
+    .menu-quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        background: #ffffff;
+        border-radius: 30px;
+        padding: 0.3rem;
+        border: 2px solid rgba(255, 77, 109, 0.1);
+    }
+    
+    .menu-qty-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: linear-gradient(135deg, #fff0f3, #ffffff);
+        color: #ff4d6d;
+        font-size: 1.3rem;
+        font-weight: bold;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .menu-qty-btn:hover {
+        background: linear-gradient(135deg, #ff4d6d, #ff8cae);
+        color: #ffffff;
+        transform: scale(0.95);
+    }
+    
+    .menu-qty-input {
+        width: 60px;
+        text-align: center;
+        border: none;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333333;
+        background: transparent;
+    }
+    
+    .menu-qty-input:focus {
+        outline: none;
+    }
+    
+    .menu-add-to-cart {
+        background: linear-gradient(135deg, #ff4d6d, #ff8cae);
+        color: #ffffff;
+        border: none;
+        padding: 1.2rem;
+        border-radius: 40px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .menu-add-to-cart::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .menu-add-to-cart:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(255, 77, 109, 0.4);
+    }
+    
+    .menu-add-to-cart:hover::before {
+        left: 100%;
+    }
+    
+    .menu-add-to-cart.added {
+        background: #00b894;
+        transform: scale(0.98);
+    }
+    
+    .menu-empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: linear-gradient(145deg, #fff8f9, #ffffff);
+        border-radius: 50px;
+        margin: 3rem 0;
+    }
+    
+    .menu-empty-icon {
+        font-size: 6rem;
+        margin-bottom: 1.5rem;
+        animation: menuFloat 4s ease-in-out infinite;
+    }
+    
+    .menu-empty-state h3 {
+        font-size: 2rem;
+        color: #ff4d6d;
+        margin-bottom: 1rem;
+    }
+    
+    .menu-empty-state p {
+        font-size: 1.2rem;
+        color: #666666;
+        margin-bottom: 2rem;
+    }
+    
+    .menu-empty-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #ff4d6d, #ff8cae);
+        color: #ffffff;
+        padding: 1.2rem 3rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.4s ease;
+        box-shadow: 0 15px 30px rgba(255, 77, 109, 0.2);
+        border: none;
+        cursor: pointer;
+    }
+    
+    .menu-empty-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 45px rgba(255, 77, 109, 0.3);
+    }
+    
+    /* Responsive Grid Breakpoints */
+    @media (max-width: 1400px) {
+        .menu-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.8rem;
+        }
+    }
+    
+    @media (max-width: 1200px) {
+        .menu-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .menu-hero h1 {
+            font-size: 3.5rem;
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .menu-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .menu-hero h1 {
+            font-size: 3rem;
+        }
+        
+        .menu-filter-btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.95rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .menu-hero {
+            padding: 3rem 1.5rem;
+        }
+        
+        .menu-hero h1 {
+            font-size: 2.5rem;
+        }
+        
+        .menu-search-wrapper {
+            flex-direction: column;
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+            gap: 1rem;
+        }
+        
+        .menu-search-input {
+            background: #ffffff;
+            padding: 1.2rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.1);
+            width: 100%;
+        }
+        
+        .menu-search-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .menu-filter-grid {
+            gap: 0.5rem;
+        }
+        
+        .menu-filter-btn {
+            padding: 0.7rem 1.2rem;
+            font-size: 0.9rem;
+        }
+        
+        .menu-stats {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .menu-sort-select {
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .menu-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        .menu-hero h1 {
+            font-size: 2rem;
+        }
+        
+        .menu-card {
+            padding: 1.5rem;
+        }
+        
+        .menu-card-title {
+            font-size: 1.4rem;
+        }
+        
+        .menu-current-price {
+            font-size: 1.5rem;
+        }
+    }
+    
+    /* Animations */
+    @keyframes menuFloatBackground {
+        0% { transform: translateX(-10%) rotate(-15deg); }
+        100% { transform: translateX(110%) rotate(-15deg); }
+    }
+    
+    @keyframes menuPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    @keyframes menuCardAppear {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes menuHeartBeat {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+    }
+    
+    @keyframes menuFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Menu Hero Section -->
+<section class="menu-hero">
+    <div class="menu-hero-content" data-aos="fade-up">
+        <h1>
+            <span>Our Pink</span>
+            <span>Collection</span>
+        </h1>
+        <p>{{ products|length }} irresistible flavors — fully customizable, made with love</p>
+        <div class="menu-hero-badge">
+            <span>✨ Today's Special: Buy 2 Get 1 Free ✨</span>
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="menu-search-section">
+    <div class="menu-search-container" data-aos="fade-up" data-aos-delay="100">
+        <div class="menu-search-wrapper">
+            <div class="menu-search-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <input type="text" id="menuSearchInput" class="menu-search-input" 
+                   placeholder="Search your favorite flavor... (e.g., Strawberry, Rose)">
+            <button class="menu-search-btn" id="menuSearchBtn">
+                <span>Search</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Filter Section -->
+<section class="menu-filter-section">
+    <div class="menu-filter-container">
+        <div class="menu-filter-header" data-aos="fade-right">
+            <div class="menu-filter-title">
+                <h3>Filter by Category</h3>
+                <span id="menuItemCount">{{ products|length }} items</span>
+            </div>
+        </div>
+        
+        <div class="menu-filter-grid" data-aos="fade-up" data-aos-delay="200">
+            <button class="menu-filter-btn active" data-filter="all">
+                <i class="fas fa-ice-cream"></i>
+                All Flavors
+            </button>
+            <button class="menu-filter-btn" data-filter="fruits">
+                <i class="fas fa-strawberry"></i>
+                Fruit Based
+            </button>
+            <button class="menu-filter-btn" data-filter="creamy">
+                <i class="fas fa-cream"></i>
+                Creamy
+            </button>
+            <button class="menu-filter-btn" data-filter="special">
+                <i class="fas fa-star"></i>
+                Special Edition
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Menu Grid Section -->
+<section class="menu-grid-section">
+    <div class="menu-grid-container">
+        <!-- Menu Stats -->
+        <div class="menu-stats" data-aos="fade-up" data-aos-delay="300">
+            <div class="menu-stats-left">
+                <div class="menu-stats-icon">🍨</div>
+                <div class="menu-stats-info">
+                    <h4>Premium Ice Creams</h4>
+                    <p id="menuShowingCount">Showing {{ products|length }} flavors</p>
+                </div>
+            </div>
+            <div class="menu-stats-right">
+                <select class="menu-sort-select" id="menuSortSelect">
+                    <option value="default">✨ Sort by: Featured</option>
+                    <option value="price-low">💰 Price: Low to High</option>
+                    <option value="price-high">💰 Price: High to Low</option>
+                    <option value="rating">⭐ Rating: Highest First</option>
+                    <option value="name">📝 Name: A to Z</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Menu Grid - Directly render products from Flask -->
+        <div class="menu-grid" id="menuGrid">
+            {% for product in products %}
+            <div class="menu-card" data-category="{{ product.category }}" 
+                 data-id="{{ product.id }}" 
+                 data-price="{{ product.price }}" 
+                 data-rating="{{ product.rating }}"
+                 data-name="{{ product.name }}">
+                
+                <div class="menu-card-badges">
+                    <button class="menu-favorite-btn" data-flavor="{{ product.name }}" data-id="{{ product.id }}">
+                        🤍
+                    </button>
+                    <div class="menu-rating-badge">
+                        <span>⭐</span>
+                        <small>{{ product.rating }}</small>
+                    </div>
+                </div>
+                
+                <div class="menu-card-image-wrapper">
+                    <img src="{{ product.image }}" alt="{{ product.name }}" class="menu-card-image" loading="lazy">
+                    <div class="menu-card-overlay">
+                        <button class="menu-card-quick-view" data-id="{{ product.id }}">
+                            <i class="fas fa-eye"></i>
+                            Quick View
+                        </button>
+                    </div>
+                </div>
+                
+                <h3 class="menu-card-title">{{ product.name }}</h3>
+                <p class="menu-card-desc">{{ product.description }}</p>
+                
+                <div class="menu-card-price">
+                    <span class="menu-current-price">₹{{ product.price }}</span>
+                    {% if product.old_price %}
+                    <span class="menu-old-price">₹{{ product.old_price }}</span>
+                    {% endif %}
+                    <span class="menu-price-unit">/scoop</span>
+                </div>
+                
+                <div class="menu-customize-section">
+                    <div class="menu-customize-group">
+                        <label class="menu-customize-label">
+                            <span>🍫</span> Choose Topping
+                        </label>
+                        <select class="menu-customize-select topping-select">
+                            {% for topping in product.toppings %}
+                            <option value="{{ topping }}">{{ topping }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="menu-customize-group">
+                        <label class="menu-customize-label">
+                            <span>🍦</span> Choose Cone
+                        </label>
+                        <select class="menu-customize-select cone-select">
+                            {% for cone in product.cones %}
+                            <option value="{{ cone }}">{{ cone }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="menu-customize-group">
+                        <label class="menu-customize-label">
+                            <span>🔢</span> Quantity
+                        </label>
+                        <div class="menu-quantity-control">
+                            <button class="menu-qty-btn minus" type="button">−</button>
+                            <input type="number" class="menu-qty-input" value="1" min="1" max="10" readonly>
+                            <button class="menu-qty-btn plus" type="button">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="menu-add-to-cart" data-id="{{ product.id }}" 
+                        data-name="{{ product.name }}" 
+                        data-price="{{ product.price }}"
+                        data-image="{{ product.image }}">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Add to Cart · ₹{{ product.price }}</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Empty State (Hidden by default) -->
+        <div class="menu-empty-state" id="menuEmptyState" style="display: none;">
+            <div class="menu-empty-icon">🔍</div>
+            <h3>No Flavors Found</h3>
+            <p>We couldn't find any ice cream matching your search.</p>
+            <button class="menu-empty-btn" id="menuClearSearch">
+                <i class="fas fa-undo-alt"></i>
+                Clear Search
+            </button>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Store all products data for JavaScript functions
+    const allProducts = {{ products|tojson }};
+    
+    // Helper functions
+    function updateItemCount() {
+        const visibleCards = document.querySelectorAll('.menu-card:not([style*="display: none"])');
+        const totalCards = document.querySelectorAll('.menu-card').length;
+        document.getElementById('menuShowingCount').innerHTML = `Showing ${visibleCards.length} of ${totalCards} flavors`;
+    }
+    
+    // Quantity buttons
+    document.querySelectorAll('.menu-qty-btn.minus').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = btn.parentElement.querySelector('.menu-qty-input');
+            let value = parseInt(input.value) || 1;
+            if (value > 1) input.value = value - 1;
+        });
+    });
+    
+    document.querySelectorAll('.menu-qty-btn.plus').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = btn.parentElement.querySelector('.menu-qty-input');
+            let value = parseInt(input.value) || 1;
+            if (value < 10) input.value = value + 1;
+        });
+    });
+    
+    // Add to cart buttons
+    document.querySelectorAll('.menu-add-to-cart').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const card = this.closest('.menu-card');
+            const qtyInput = card.querySelector('.menu-qty-input');
+            const quantity = parseInt(qtyInput.value) || 1;
+            const name = this.dataset.name;
+            const price = parseInt(this.dataset.price);
+            const image = this.dataset.image;
+            const topping = card.querySelector('.topping-select').value;
+            const cone = card.querySelector('.cone-select').value;
+            
+            const item = {
+                flavor: name,
+                image: image,
+                topping: topping,
+                cone: cone,
+                qty: quantity,
+                price: price
+            };
+            
+            // Add to cart
+            let cart = JSON.parse(localStorage.getItem('pinkCart') || '[]');
+            cart.push({...item, id: Date.now()});
+            localStorage.setItem('pinkCart', JSON.stringify(cart));
+            
+            // Show notification
+            if (typeof showNotification === 'function') {
+                showNotification(`${name} added to cart! 🍦`, 'success');
+            } else {
+                alert(`${name} added to cart!`);
+            }
+            
+            // Button animation
+            this.classList.add('added');
+            this.innerHTML = `<i class="fas fa-check"></i> Added!`;
+            
+            setTimeout(() => {
+                this.classList.remove('added');
+                this.innerHTML = `<i class="fas fa-shopping-cart"></i><span>Add to Cart · ₹${price}</span>`;
+            }, 2000);
+            
+            // Trigger cart update event
+            window.dispatchEvent(new CustomEvent('cartUpdated'));
+        });
+    });
+    
+    // Favorite buttons
+    document.querySelectorAll('.menu-favorite-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const flavor = this.dataset.flavor;
+            const id = parseInt(this.dataset.id);
+            
+            let favorites = JSON.parse(localStorage.getItem('pinkFavorites') || '[]');
+            const index = favorites.findIndex(f => f.id === id);
+            
+            if (index >= 0) {
+                favorites.splice(index, 1);
+                this.innerHTML = '🤍';
+                if (typeof showNotification === 'function') {
+                    showNotification(`Removed ${flavor} from favorites`, 'info');
+                }
+            } else {
+                favorites.push({ id, flavor, addedAt: new Date().toISOString() });
+                this.innerHTML = '❤️';
+                if (typeof showNotification === 'function') {
+                    showNotification(`${flavor} added to favorites! ❤️`, 'success');
+                }
+            }
+            
+            localStorage.setItem('pinkFavorites', JSON.stringify(favorites));
+        });
+        
+        // Check if already favorite
+        const id = parseInt(btn.dataset.id);
+        let favorites = JSON.parse(localStorage.getItem('pinkFavorites') || '[]');
+        if (favorites.some(f => f.id === id)) {
+            btn.innerHTML = '❤️';
+        }
+    });
+    
+    // Quick view buttons
+    document.querySelectorAll('.menu-card-quick-view').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = parseInt(this.dataset.id);
+            const product = allProducts.find(p => p.id === id);
+            if (product) {
+                alert(`${product.name}\nPrice: ₹${product.price}\n${product.description}\nRating: ${product.rating}⭐`);
+            }
+        });
+    });
+    
+    // Search functionality
+    function initMenuSearch() {
+        const searchInput = document.getElementById('menuSearchInput');
+        const searchBtn = document.getElementById('menuSearchBtn');
+        const clearBtn = document.getElementById('menuClearSearch');
+        const menuCards = document.querySelectorAll('.menu-card');
+        const emptyState = document.getElementById('menuEmptyState');
+        
+        if (!searchInput) return;
+        
+        function performSearch() {
+            const searchValue = searchInput.value.toLowerCase();
+            let visibleCount = 0;
+            
+            menuCards.forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                if (name.includes(searchValue)) {
+                    card.style.display = "block";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+            
+            document.getElementById('menuShowingCount').innerHTML = `Showing ${visibleCount} of ${menuCards.length} flavors`;
+            if (emptyState) emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+        
+        searchInput.addEventListener('input', performSearch);
+        if (searchBtn) searchBtn.addEventListener('click', performSearch);
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                performSearch();
+            });
+        }
+    }
+    
+    // Filter functionality
+    function initMenuFilters() {
+        const filterButtons = document.querySelectorAll('.menu-filter-btn');
+        const menuCards = document.querySelectorAll('.menu-card');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filterValue = this.getAttribute('data-filter');
+                let visibleCount = 0;
+                
+                menuCards.forEach(card => {
+                    const category = card.getAttribute('data-category');
+                    if (filterValue === 'all' || category === filterValue) {
+                        card.style.display = "block";
+                        visibleCount++;
+                    } else {
+                        card.style.display = "none";
+                    }
+                });
+                
+                document.getElementById('menuShowingCount').innerHTML = `Showing ${visibleCount} of ${menuCards.length} flavors`;
+                const emptyState = document.getElementById('menuEmptyState');
+                if (emptyState) emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+            });
+        });
+    }
+    
+    // Sort functionality
+    function initMenuSort() {
+        const sortSelect = document.getElementById('menuSortSelect');
+        const menuGrid = document.getElementById('menuGrid');
+        
+        if (!sortSelect || !menuGrid) return;
+        
+        sortSelect.addEventListener('change', function() {
+            const sortValue = this.value;
+            const cards = Array.from(menuGrid.querySelectorAll('.menu-card'));
+            
+            cards.sort((a, b) => {
+                const priceA = parseFloat(a.dataset.price);
+                const priceB = parseFloat(b.dataset.price);
+                const ratingA = parseFloat(a.dataset.rating);
+                const ratingB = parseFloat(b.dataset.rating);
+                const nameA = a.dataset.name.toLowerCase();
+                const nameB = b.dataset.name.toLowerCase();
+                
+                if (sortValue === 'price-low') return priceA - priceB;
+                if (sortValue === 'price-high') return priceB - priceA;
+                if (sortValue === 'rating') return ratingB - ratingA;
+                if (sortValue === 'name') return nameA.localeCompare(nameB);
+                return 0;
+            });
+            
+            cards.forEach(card => menuGrid.appendChild(card));
+        });
+    }
+    
+    // Initialize all functions
+    document.addEventListener('DOMContentLoaded', function() {
+        initMenuFilters();
+        initMenuSearch();
+        initMenuSort();
+    });
+</script>
+{% endblock %}

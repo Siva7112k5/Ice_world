@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Pink Scoops{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+<style>
+    .admin-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+    }
+    
+    .admin-header {
+        margin-bottom: 2rem;
+    }
+    
+    .admin-header h1 {
+        color: #ff4d6d;
+        font-size: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #ff4d6d, #ff8cae);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .stat-info h3 {
+        font-size: 1.8rem;
+        color: #ff4d6d;
+        margin-bottom: 0.2rem;
+    }
+    
+    .stat-info p {
+        color: #666;
+    }
+    
+    .recent-orders {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .recent-orders h2 {
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .orders-table th,
+    .orders-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .orders-table th {
+        color: #ff4d6d;
+        font-weight: 600;
+    }
+    
+    .status-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .admin-nav {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .admin-nav a {
+        padding: 0.8rem 1.5rem;
+        background: white;
+        border-radius: 30px;
+        text-decoration: none;
+        color: #ff4d6d;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .admin-nav a:hover,
+    .admin-nav a.active {
+        background: #ff4d6d;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome back, {{ session.user.full_name }}!</p>
+    </div>
+    
+    <div class="admin-nav">
+        <a href="{{ url_for('admin_dashboard') }}" class="active">Dashboard</a>
+        <a href="{{ url_for('admin_orders') }}">Orders</a>
+        <a href="{{ url_for('admin_products') }}">Products</a>
+        <a href="{{ url_for('admin_users') }}">Users</a>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+                <h3>{{ stats.total_orders }}</h3>
+                <p>Total Orders</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+                <h3>₹{{ stats.total_revenue|round|int }}</h3>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">🍦</div>
+            <div class="stat-info">
+                <h3>{{ stats.total_products }}</h3>
+                <p>Products</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+                <h3>{{ stats.total_users }}</h3>
+                <p>Users</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="recent-orders">
+        <h2>Recent Orders</h2>
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td>{{ order.orderId }}</td>
+                    <td>{{ order.customer.fullName }}</td>
+                    <td>₹{{ order.pricing.total }}</td>
+                    <td>
+                        <span class="status-badge status-{{ order.status }}">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>{{ order.orderDate[:10] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">No orders yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}My Favorites - Pink Scoops{% endblock %}
+
+{% block extra_css %}
+<style>
+    .favorites-hero {
+        background: linear-gradient(145deg, #fff0f3, #ffffff);
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+    
+    .favorites-hero h1 {
+        font-size: 3rem;
+        color: #ff4d6d;
+    }
+    
+    .favorites-hero p {
+        color: #666;
+        margin-top: 1rem;
+    }
+    
+    .favorites-stats {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .favorites-count {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .favorites-count-icon {
+        font-size: 2rem;
+    }
+    
+    .favorites-count-info h4 {
+        color: #ff4d6d;
+    }
+    
+    .btn-clear-favorites {
+        background: transparent;
+        border: 2px solid #ff4d6d;
+        color: #ff4d6d;
+        padding: 0.6rem 1.5rem;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    
+    .btn-add-more {
+        background: #ff4d6d;
+        color: white;
+        padding: 0.6rem 1.5rem;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-left: 1rem;
+    }
+    
+    .favorites-grid {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+    
+    .favorite-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        position: relative;
+    }
+    
+    .favorite-card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .favorite-card-info {
+        padding: 1rem;
+    }
+    
+    .favorite-card-title {
+        color: #ff4d6d;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .favorite-card-price {
+        font-weight: bold;
+        margin: 0.5rem 0;
+    }
+    
+    .remove-favorite {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: white;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .add-to-cart-fav {
+        width: 100%;
+        background: #ff4d6d;
+        color: white;
+        border: none;
+        padding: 0.6rem;
+        border-radius: 30px;
+        margin-top: 1rem;
+        cursor: pointer;
+    }
+    
+    .empty-favorites {
+        text-align: center;
+        padding: 4rem;
+    }
+    
+    .recommended-section {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+    }
+    
+    .recommended-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .recommended-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="favorites-hero">
+    <h1>My Favorites ❤️</h1>
+    <p>All your most-loved flavors, gathered in one sweet spot</p>
+</section>
+
+<div class="favorites-stats">
+    <div class="favorites-count">
+        <div class="favorites-count-icon">❤️</div>
+        <div class="favorites-count-info">
+            <h4>Your Favorites</h4>
+            <p id="favoritesCount">0 items</p>
+        </div>
+    </div>
+    <div>
+        <button class="btn-clear-favorites" onclick="clearAllFavorites()">Clear All</button>
+        <a href="/menu" class="btn-add-more">Add More +</a>
+    </div>
+</div>
+
+<div id="favoritesGrid" class="favorites-grid">
+    <div class="empty-favorites">
+        <p>You haven't added any favorites yet.</p>
+        <a href="/menu" class="btn-primary" style="display: inline-block; margin-top: 1rem;">Explore Menu</a>
+    </div>
+</div>
+
+<section id="recommendedSection" class="recommended-section" style="display: none;">
+    <div class="recommended-header">
+        <h2>You Might Also Like</h2>
+        <a href="/menu" style="color: #ff4d6d;">View All →</a>
+    </div>
+    <div id="recommendedGrid" class="recommended-grid"></div>
+</section>
+
+<script>
+    let allProducts = [];
+    
+    async function loadProducts() {
+        try {
+            const response = await fetch('/api/products');
+            allProducts = await response.json();
+            renderFavorites();
+        } catch(e) {
+            console.error('Error loading products:', e);
+        }
+    }
+    
+    function getFavorites() {
+        try {
+            return JSON.parse(localStorage.getItem('pinkFavorites') || '[]');
+        } catch(e) {
+            return [];
+        }
+    }
+    
+    function saveFavorites(favorites) {
+        localStorage.setItem('pinkFavorites', JSON.stringify(favorites));
+        renderFavorites();
+        window.dispatchEvent(new CustomEvent('favoritesUpdated'));
+    }
+    
+    function renderFavorites() {
+        const favorites = getFavorites();
+        const container = document.getElementById('favoritesGrid');
+        const countEl = document.getElementById('favoritesCount');
+        
+        countEl.textContent = `${favorites.length} items`;
+        
+        if (favorites.length === 0) {
+            container.innerHTML = `
+                <div class="empty-favorites">
+                    <p>You haven't added any favorites yet.</p>
+                    <a href="/menu" class="btn-primary" style="display: inline-block; margin-top: 1rem;">Explore Menu</a>
+                </div>
+            `;
+            document.getElementById('recommendedSection').style.display = 'none';
+            return;
+        }
+        
+        const favoriteItems = favorites.map(fav => {
+            const product = allProducts.find(p => p.id === fav.id);
+            return product ? { ...product, favoriteId: fav.id } : null;
+        }).filter(p => p);
+        
+        container.innerHTML = favoriteItems.map(item => `
+            <div class="favorite-card">
+                <button class="remove-favorite" onclick="removeFavorite(${item.id})">✖</button>
+                <img src="${item.image}" alt="${item.name}" class="favorite-card-image">
+                <div class="favorite-card-info">
+                    <h3 class="favorite-card-title">${item.name}</h3>
+                    <p>${item.description.substring(0, 80)}...</p>
+                    <div class="favorite-card-price">₹${item.price}</div>
+                    <button class="add-to-cart-fav" onclick="addToCartFromFav(${item.id}, '${item.name}', ${item.price}, '${item.image}')">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        
+        // Show recommendations
+        renderRecommendations(favoriteItems);
+        document.getElementById('recommendedSection').style.display = 'block';
+    }
+    
+    function renderRecommendations(excludeItems) {
+        const excludeIds = excludeItems.map(i => i.id);
+        const recommendations = allProducts
+            .filter(p => !excludeIds.includes(p.id))
+            .slice(0, 4);
+        
+        const container = document.getElementById('recommendedGrid');
+        container.innerHTML = recommendations.map(item => `
+            <div class="favorite-card">
+                <img src="${item.image}" alt="${item.name}" class="favorite-card-image">
+                <div class="favorite-card-info">
+                    <h3 class="favorite-card-title">${item.name}</h3>
+                    <div class="favorite-card-price">₹${item.price}</div>
+                    <button class="add-to-cart-fav" onclick="addToCartFromFav(${item.id}, '${item.name}', ${item.price}, '${item.image}')">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function addToCartFromFav(id, name, price, image) {
+        const item = {
+            id: id,
+            flavor: name,
+            price: price,
+            topping: 'Sprinkles',
+            cone: 'Waffle',
+            qty: 1,
+            image: image
+        };
+        
+        if (typeof window.addToCart === 'function') {
+            window.addToCart(item);
+        } else {
+            let cart = JSON.parse(localStorage.getItem('pinkCart') || '[]');
+            cart.push({...item, id: Date.now()});
+            localStorage.setItem('pinkCart', JSON.stringify(cart));
+            showNotification(`${name} added to cart!`, 'success');
+            window.dispatchEvent(new CustomEvent('cartUpdated'));
+        }
+    }
+    
+    function removeFavorite(id) {
+        let favorites = getFavorites();
+        favorites = favorites.filter(f => f.id !== id);
+        saveFavorites(favorites);
+        showNotification('Removed from favorites', 'info');
+    }
+    
+    function clearAllFavorites() {
+        if (confirm('Are you sure you want to clear all favorites?')) {
+            saveFavorites([]);
+            showNotification('All favorites cleared', 'info');
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadProducts);
+</script>
+{% endblock %}

@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "password": "admin123",
+    "email": "admin@pinkscoops.com",
+    "role": "admin",
+    "full_name": "Admin User",
+    "created_at": "2026-03-20T17:48:56.751527"
+  },
+  {
+    "id": 2,
+    "username": "siva",
+    "password": "1234567",
+    "email": "ksiva2005@gmail.com",
+    "full_name": "siva k",
+    "phone": "9043345140",
+    "city": "kanyakumari , thovalai",
+    "role": "user",
+    "created_at": "2026-03-20T18:13:16.371438"
+  }
+]

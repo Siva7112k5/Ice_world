@@ -1,0 +1,649 @@
+{% extends "base.html" %}
+
+{% block title %}Your Cart | Pink Scoops{% endblock %}
+
+{% block extra_css %}
+<style>
+    .order-hero {
+        background: linear-gradient(145deg, #fff0f3, #ffffff);
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+    
+    .order-hero h1 {
+        font-size: 2.5rem;
+        color: #ff4d6d;
+    }
+    
+    .cart-section {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+    }
+    
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .cart-header-left {
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+    }
+    
+    .cart-header-left h2 {
+        color: #ff4d6d;
+    }
+    
+    .btn-clear-cart {
+        background: transparent;
+        border: 1px solid #ddd;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    
+    .cart-item {
+        background: white;
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .cart-item-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        object-fit: cover;
+    }
+    
+    .cart-item-details {
+        flex: 1;
+    }
+    
+    .cart-item-details h4 {
+        color: #ff4d6d;
+    }
+    
+    .cart-item-quantity {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .cart-item-quantity button {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+    
+    .cart-item-total {
+        font-weight: bold;
+        min-width: 80px;
+        text-align: right;
+    }
+    
+    .cart-item-remove {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #999;
+    }
+    
+    .order-summary {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 100px;
+    }
+    
+    .summary-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+    }
+    
+    .summary-row.total {
+        border-top: 2px solid #ff4d6d;
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #ff4d6d;
+    }
+    
+    .promo-section {
+        margin: 1rem 0;
+        padding: 1rem 0;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .promo-input-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .promo-input {
+        flex: 1;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 30px;
+    }
+    
+    .btn-apply {
+        background: #ff4d6d;
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 30px;
+        cursor: pointer;
+    }
+    
+    .btn-checkout {
+        width: 100%;
+        background: linear-gradient(135deg, #ff4d6d, #ff8cae);
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 50px;
+        font-weight: bold;
+        margin-top: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .btn-checkout:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255,77,109,0.3);
+    }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 4rem;
+        background: white;
+        border-radius: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .cart-section {
+            grid-template-columns: 1fr;
+        }
+        
+        .cart-item {
+            flex-wrap: wrap;
+        }
+        
+        .cart-item-total {
+            text-align: left;
+            margin-left: auto;
+        }
+    }
+    
+    /* Modal Styles */
+    .customer-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .customer-modal-content {
+        background: white;
+        border-radius: 30px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 2rem;
+    }
+    
+    .customer-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .customer-modal-header h2 {
+        color: #ff4d6d;
+    }
+    
+    .customer-modal-close {
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+    
+    .customer-form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .customer-form-group label {
+        display: block;
+        margin-bottom: 0.3rem;
+        font-weight: 500;
+    }
+    
+    .customer-form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+    }
+    
+    .customer-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .customer-order-summary {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 15px;
+        margin: 1rem 0;
+    }
+    
+    .customer-order-total {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #ddd;
+    }
+    
+    .customer-form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .customer-btn {
+        flex: 1;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    
+    .customer-btn-primary {
+        background: #ff4d6d;
+        color: white;
+    }
+    
+    .customer-btn-secondary {
+        background: #eee;
+        color: #666;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="order-hero">
+    <h1>Your Sweet Cart</h1>
+    <p>Review your items, customize, and checkout</p>
+</section>
+
+<section class="cart-section">
+    <div class="cart-items-container">
+        <div class="cart-header">
+            <div class="cart-header-left">
+                <h2>Shopping Cart</h2>
+                <span id="cartItemCount">0 items</span>
+            </div>
+            <button id="clearCartBtn" class="btn-clear-cart">Clear Cart</button>
+        </div>
+        <div id="cartItemsList"></div>
+    </div>
+    
+    <div class="order-summary">
+        <div class="summary-header">
+            <i class="fas fa-receipt"></i>
+            <h3>Order Summary</h3>
+        </div>
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="summarySubtotal">₹0</span>
+        </div>
+        <div class="summary-row">
+            <span>Delivery Fee</span>
+            <span id="summaryDelivery">₹49</span>
+        </div>
+        <div class="summary-row">
+            <span>Tax (5%)</span>
+            <span id="summaryTax">₹0</span>
+        </div>
+        
+        <div class="promo-section">
+            <div>✨ Have a promo code?</div>
+            <div class="promo-input-group">
+                <input type="text" id="promoCode" class="promo-input" placeholder="Enter code">
+                <button id="applyPromoBtn" class="btn-apply">Apply</button>
+            </div>
+            <div id="promoMessage" style="margin-top: 0.5rem; font-size: 0.9rem;"></div>
+        </div>
+        
+        <div class="summary-row total">
+            <span>Total</span>
+            <span id="summaryTotal">₹0</span>
+        </div>
+        
+        <button id="checkoutBtn" class="btn-checkout">
+            <i class="fas fa-lock"></i> Proceed to Checkout
+        </button>
+    </div>
+</section>
+
+<!-- Customer Details Modal -->
+<div id="customerDetailsModal" class="customer-modal">
+    <div class="customer-modal-content">
+        <div class="customer-modal-header">
+            <h2>Customer Details</h2>
+            <span class="customer-modal-close">&times;</span>
+        </div>
+        <form id="customerForm">
+            <div class="customer-form-group">
+                <label>Full Name *</label>
+                <input type="text" id="fullName" class="customer-form-control" required>
+            </div>
+            <div class="customer-form-group">
+                <label>Phone Number *</label>
+                <input type="tel" id="phoneNumber" class="customer-form-control" pattern="[0-9]{10}" required>
+            </div>
+            <div class="customer-form-group">
+                <label>Email Address</label>
+                <input type="email" id="emailAddress" class="customer-form-control">
+            </div>
+            <div class="customer-form-group">
+                <label>Delivery Address *</label>
+                <textarea id="deliveryAddress" class="customer-form-control" rows="2" required></textarea>
+            </div>
+            <div class="customer-form-row">
+                <div class="customer-form-group">
+                    <label>City *</label>
+                    <input type="text" id="city" class="customer-form-control" required>
+                </div>
+                <div class="customer-form-group">
+                    <label>Pincode *</label>
+                    <input type="text" id="pincode" class="customer-form-control" pattern="[0-9]{6}" required>
+                </div>
+            </div>
+            <div class="customer-form-group">
+                <label>Payment Method *</label>
+                <select id="paymentMethod" class="customer-form-control" required>
+                    <option value="cod">Cash on Delivery</option>
+                    <option value="card">Credit/Debit Card</option>
+                    <option value="upi">UPI</option>
+                </select>
+            </div>
+            
+            <div class="customer-order-summary">
+                <h3>Order Summary</h3>
+                <div id="customerOrderItems"></div>
+                <div class="customer-order-total">
+                    <span>Total Amount:</span>
+                    <span id="customerOrderTotal">₹0</span>
+                </div>
+            </div>
+            
+            <div class="customer-form-actions">
+                <button type="button" class="customer-btn-secondary" id="cancelCustomerModal">Cancel</button>
+                <button type="submit" class="customer-btn-primary">Confirm Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let cartItems = [];
+    let currentOrderTotal = 0;
+    
+    function loadCart() {
+        try {
+            cartItems = JSON.parse(localStorage.getItem('pinkCart') || '[]');
+            renderCart();
+            updateSummary();
+        } catch(e) {
+            console.error('Error loading cart:', e);
+        }
+    }
+    
+    function renderCart() {
+        const container = document.getElementById('cartItemsList');
+        const itemCountEl = document.getElementById('cartItemCount');
+        
+        if (cartItems.length === 0) {
+            container.innerHTML = `
+                <div class="empty-cart">
+                    <div class="empty-cart-icon">🛒</div>
+                    <h3>Your cart is empty</h3>
+                    <p>Looks like you haven't added any ice cream yet.</p>
+                    <a href="/menu" class="btn-primary" style="display: inline-block; margin-top: 1rem;">Browse Menu</a>
+                </div>
+            `;
+            itemCountEl.textContent = '0 items';
+            return;
+        }
+        
+        container.innerHTML = cartItems.map((item, index) => `
+            <div class="cart-item" data-index="${index}">
+                <img src="${item.image}" alt="${item.flavor}" class="cart-item-image">
+                <div class="cart-item-details">
+                    <h4>${item.flavor}</h4>
+                    <p>${item.topping} • ${item.cone}</p>
+                    <div class="cart-item-price">₹${item.price}</div>
+                </div>
+                <div class="cart-item-quantity">
+                    <button onclick="updateQty(${index}, ${item.qty - 1})">-</button>
+                    <span>${item.qty}</span>
+                    <button onclick="updateQty(${index}, ${item.qty + 1})">+</button>
+                </div>
+                <div class="cart-item-total">₹${item.price * item.qty}</div>
+                <button class="cart-item-remove" onclick="removeItem(${index})">🗑️</button>
+            </div>
+        `).join('');
+        
+        itemCountEl.textContent = `${cartItems.length} items`;
+    }
+    
+    function updateQty(index, newQty) {
+        if (newQty < 1) return;
+        cartItems[index].qty = newQty;
+        saveCartAndUpdate();
+    }
+    
+    function removeItem(index) {
+        cartItems.splice(index, 1);
+        saveCartAndUpdate();
+    }
+    
+    function saveCartAndUpdate() {
+        localStorage.setItem('pinkCart', JSON.stringify(cartItems));
+        renderCart();
+        updateSummary();
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+    }
+    
+    function updateSummary() {
+        const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        const delivery = subtotal > 999 ? 0 : 49;
+        const tax = Math.round(subtotal * 0.05);
+        let total = subtotal + delivery + tax;
+        
+        const promoCode = document.getElementById('promoCode').value;
+        let discount = 0;
+        if (promoCode === 'PINK10') {
+            discount = Math.round(total * 0.1);
+            total -= discount;
+            document.getElementById('promoMessage').innerHTML = '<span style="color: #00b894;">✓ Promo code applied! 10% off</span>';
+        } else if (promoCode) {
+            document.getElementById('promoMessage').innerHTML = '<span style="color: #d63031;">✗ Invalid promo code</span>';
+        } else {
+            document.getElementById('promoMessage').innerHTML = '';
+        }
+        
+        document.getElementById('summarySubtotal').textContent = `₹${subtotal}`;
+        document.getElementById('summaryDelivery').textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
+        document.getElementById('summaryTax').textContent = `₹${tax}`;
+        document.getElementById('summaryTotal').textContent = `₹${total}`;
+        
+        currentOrderTotal = total;
+    }
+    
+    function showCustomerModal() {
+        if (cartItems.length === 0) {
+            showNotification('Your cart is empty!', 'error');
+            return;
+        }
+        
+        const modal = document.getElementById('customerDetailsModal');
+        const orderItemsContainer = document.getElementById('customerOrderItems');
+        
+        orderItemsContainer.innerHTML = cartItems.map(item => `
+            <div style="display: flex; justify-content: space-between; padding: 0.3rem 0;">
+                <span>${item.flavor} x ${item.qty}</span>
+                <span>₹${item.price * item.qty}</span>
+            </div>
+        `).join('');
+        
+        document.getElementById('customerOrderTotal').textContent = `₹${currentOrderTotal}`;
+        modal.style.display = 'flex';
+    }
+    
+    async function submitOrder(formData) {
+        const orderData = {
+            customer: {
+                fullName: formData.fullName,
+                phoneNumber: formData.phoneNumber,
+                email: formData.email || '',
+                deliveryAddress: formData.address,
+                city: formData.city,
+                pincode: formData.pincode,
+                paymentMethod: formData.paymentMethod
+            },
+            items: cartItems,
+            pricing: {
+                subtotal: cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0),
+                delivery: cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0) > 999 ? 0 : 49,
+                tax: Math.round(cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0) * 0.05),
+                discount: document.getElementById('promoCode').value === 'PINK10' ? 
+                    Math.round(currentOrderTotal / 9) : 0,
+                total: currentOrderTotal
+            }
+        };
+        
+        try {
+            const response = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            
+            const result = await response.json();
+            
+            // Save to localStorage for order history
+            let orders = JSON.parse(localStorage.getItem('pinkOrders') || '[]');
+            orders.push(result);
+            localStorage.setItem('pinkOrders', JSON.stringify(orders));
+            
+            // Clear cart
+            localStorage.removeItem('pinkCart');
+            
+            // Store last order ID
+            sessionStorage.setItem('lastOrderId', result.orderId);
+            sessionStorage.setItem('lastOrderTotal', result.pricing.total);
+            
+            showNotification('Order placed successfully! 🎉', 'success');
+            setTimeout(() => {
+                window.location.href = `/order-success?order=${result.orderId}`;
+            }, 1500);
+            
+        } catch(e) {
+            console.error('Error placing order:', e);
+            showNotification('Error placing order. Please try again.', 'error');
+        }
+    }
+    
+    // Event Listeners
+    document.getElementById('applyPromoBtn').addEventListener('click', updateSummary);
+    document.getElementById('checkoutBtn').addEventListener('click', showCustomerModal);
+    document.getElementById('clearCartBtn').addEventListener('click', () => {
+        if (confirm('Clear your cart?')) {
+            cartItems = [];
+            saveCartAndUpdate();
+        }
+    });
+    
+    // Modal events
+    const modal = document.getElementById('customerDetailsModal');
+    document.querySelector('.customer-modal-close').onclick = () => modal.style.display = 'none';
+    document.getElementById('cancelCustomerModal').onclick = () => modal.style.display = 'none';
+    
+    document.getElementById('customerForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = {
+            fullName: document.getElementById('fullName').value,
+            phoneNumber: document.getElementById('phoneNumber').value,
+            email: document.getElementById('emailAddress').value,
+            address: document.getElementById('deliveryAddress').value,
+            city: document.getElementById('city').value,
+            pincode: document.getElementById('pincode').value,
+            paymentMethod: document.getElementById('paymentMethod').value
+        };
+        
+        if (!formData.fullName || !formData.phoneNumber || !formData.address || !formData.city || !formData.pincode) {
+            showNotification('Please fill all required fields', 'error');
+            return;
+        }
+        
+        if (!/^\d{10}$/.test(formData.phoneNumber)) {
+            showNotification('Please enter a valid 10-digit phone number', 'error');
+            return;
+        }
+        
+        if (!/^\d{6}$/.test(formData.pincode)) {
+            showNotification('Please enter a valid 6-digit pincode', 'error');
+            return;
+        }
+        
+        modal.style.display = 'none';
+        submitOrder(formData);
+    });
+    
+    document.addEventListener('DOMContentLoaded', loadCart);
+</script>
+{% endblock %}

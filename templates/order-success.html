@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Order Success - Pink Scoops{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        max-width: 800px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+        text-align: center;
+    }
+    
+    .success-card {
+        background: white;
+        border-radius: 30px;
+        padding: 3rem;
+        box-shadow: 0 20px 40px rgba(255, 77, 109, 0.1);
+    }
+    
+    .success-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        animation: bounce 1s ease;
+    }
+    
+    .success-card h1 {
+        color: #ff4d6d;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .success-card p {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    
+    .order-details {
+        background: #f8f9fa;
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        text-align: left;
+    }
+    
+    .order-details h3 {
+        color: #ff4d6d;
+        margin-bottom: 1rem;
+    }
+    
+    .order-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #ff4d6d, #ff8cae);
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: transparent;
+        border: 2px solid #ff4d6d;
+        color: #ff4d6d;
+    }
+    
+    .btn-primary:hover, .btn-secondary:hover {
+        transform: translateY(-3px);
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div id="orderContent" style="display: none;">
+        <div class="success-card">
+            <div class="success-icon">🎉</div>
+            <h1>Order Confirmed!</h1>
+            <p>Thank you for ordering from Pink Scoops. Your sweet treats are on the way!</p>
+            
+            <div class="order-details">
+                <h3>Order Details</h3>
+                <div class="order-row">
+                    <span>Order ID:</span>
+                    <strong id="orderIdDisplay">-</strong>
+                </div>
+                <div class="order-row">
+                    <span>Order Date:</span>
+                    <strong id="orderDateDisplay">-</strong>
+                </div>
+                <div class="order-row">
+                    <span>Total Amount:</span>
+                    <strong id="orderTotalDisplay">-</strong>
+                </div>
+                <div class="order-row">
+                    <span>Payment Method:</span>
+                    <strong id="paymentMethodDisplay">-</strong>
+                </div>
+                <div class="order-row">
+                    <span>Delivery Address:</span>
+                    <strong id="addressDisplay">-</strong>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="/menu" class="btn-primary">
+                    <i class="fas fa-ice-cream"></i> Continue Shopping
+                </a>
+                <a href="/order-history" class="btn-secondary">
+                    <i class="fas fa-history"></i> View Orders
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div id="loadingState" class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading order details...</p>
+    </div>
+</div>
+
+<script>
+    async function loadOrderDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let orderId = urlParams.get('order');
+        
+        if (!orderId) {
+            orderId = sessionStorage.getItem('lastOrderId');
+        }
+        
+        if (!orderId) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('orderContent').style.display = 'block';
+            document.getElementById('orderIdDisplay').textContent = 'Not found';
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/orders');
+            const orders = await response.json();
+            const order = orders.find(o => o.orderId === orderId);
+            
+            if (order) {
+                document.getElementById('orderIdDisplay').textContent = order.orderId;
+                document.getElementById('orderDateDisplay').textContent = new Date(order.orderDate).toLocaleString();
+                document.getElementById('orderTotalDisplay').textContent = `₹${order.pricing.total}`;
+                document.getElementById('paymentMethodDisplay').textContent = order.customer.paymentMethod.toUpperCase();
+                document.getElementById('addressDisplay').textContent = `${order.customer.deliveryAddress}, ${order.customer.city} - ${order.customer.pincode}`;
+            }
+            
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('orderContent').style.display = 'block';
+            
+        } catch(e) {
+            console.error('Error loading order:', e);
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('orderContent').style.display = 'block';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadOrderDetails);
+</script>
+{% endblock %}

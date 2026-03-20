@@ -1,0 +1,724 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Products - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+        display: flex;
+        gap: 2rem;
+    }
+    
+    /* Sidebar Styles */
+    .admin-sidebar {
+        width: 280px;
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+    
+    .admin-sidebar h3 {
+        color: #ff4d6d;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #ff4d6d;
+    }
+    
+    .admin-sidebar-nav {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .admin-sidebar-nav li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .admin-sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.8rem 1rem;
+        color: #666;
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+    
+    .admin-sidebar-nav a i {
+        width: 24px;
+        color: #ff4d6d;
+    }
+    
+    .admin-sidebar-nav a:hover,
+    .admin-sidebar-nav a.active {
+        background: #fff0f3;
+        color: #ff4d6d;
+    }
+    
+    /* Main Content */
+    .admin-main {
+        flex: 1;
+    }
+    
+    .admin-top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .admin-top-bar h2 {
+        color: #ff4d6d;
+        font-size: 1.8rem;
+        margin: 0;
+    }
+    
+    /* Form Styles */
+    .admin-form {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .admin-form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .admin-form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .admin-form-group input,
+    .admin-form-group textarea,
+    .admin-form-group select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid #eee;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+    
+    .admin-form-group input:focus,
+    .admin-form-group textarea:focus,
+    .admin-form-group select:focus {
+        outline: none;
+        border-color: #ff4d6d;
+    }
+    
+    .admin-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Checkbox Styles */
+    .admin-form-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 0.5rem;
+    }
+    
+    /* Image Upload */
+    .image-upload-container {
+        border: 2px dashed #ddd;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .image-upload-container:hover {
+        border-color: #ff4d6d;
+        background: #fff0f3;
+    }
+    
+    .image-upload-container i {
+        font-size: 3rem;
+        color: #ff4d6d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .image-upload-container p {
+        margin: 0;
+        color: #666;
+    }
+    
+    .image-preview {
+        margin-top: 1rem;
+        display: none;
+    }
+    
+    .image-preview img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 12px;
+        object-fit: cover;
+    }
+    
+    /* Weight Options */
+    .weight-option-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        align-items: center;
+    }
+    
+    .weight-option-row input {
+        flex: 1;
+    }
+    
+    .remove-weight {
+        cursor: pointer;
+        color: #d63031;
+        font-size: 1.2rem;
+        transition: transform 0.3s;
+    }
+    
+    .remove-weight:hover {
+        transform: scale(1.1);
+    }
+    
+    .add-weight-btn {
+        background: transparent;
+        border: 2px dashed #ff4d6d;
+        color: #ff4d6d;
+        padding: 0.8rem;
+        border-radius: 12px;
+        width: 100%;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .add-weight-btn:hover {
+        background: #ff4d6d;
+        color: white;
+    }
+    
+    /* Button Styles */
+    .admin-btn {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .admin-btn-primary {
+        background: #ff4d6d;
+        color: white;
+    }
+    
+    .admin-btn-primary:hover {
+        background: #ff3355;
+        transform: translateY(-2px);
+    }
+    
+    .admin-btn-success {
+        background: #00b894;
+        color: white;
+    }
+    
+    .admin-btn-success:hover {
+        background: #00a884;
+        transform: translateY(-2px);
+    }
+    
+    .admin-form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: flex-end;
+    }
+    
+    /* Products Grid */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: transform 0.3s;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .product-info {
+        padding: 1rem;
+    }
+    
+    .product-info h3 {
+        color: #ff4d6d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .product-price {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #ff4d6d;
+        margin: 0.5rem 0;
+    }
+    
+    .product-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .edit-btn, .delete-btn {
+        flex: 1;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    
+    .edit-btn {
+        background: #ff4d6d;
+        color: white;
+    }
+    
+    .delete-btn {
+        background: #eee;
+        color: #666;
+    }
+    
+    .edit-btn:hover, .delete-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+        .admin-container {
+            flex-direction: column;
+        }
+        
+        .admin-sidebar {
+            width: 100%;
+            position: static;
+        }
+        
+        .admin-sidebar-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .admin-sidebar-nav li {
+            margin: 0;
+        }
+        
+        .admin-form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .admin-container {
+            padding: 0 1rem;
+        }
+        
+        .admin-top-bar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .admin-form {
+            padding: 1.5rem;
+        }
+        
+        .weight-option-row {
+            flex-direction: column;
+        }
+        
+        .weight-option-row input {
+            width: 100%;
+        }
+        
+        .admin-form-actions {
+            flex-direction: column;
+        }
+        
+        .admin-form-actions button,
+        .admin-form-actions a {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+        <h3>Admin Panel</h3>
+        <ul class="admin-sidebar-nav">
+            <li><a href="{{ url_for('admin_dashboard') }}">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a></li>
+            <li><a href="{{ url_for('admin_orders') }}">
+                <i class="fas fa-shopping-cart"></i> Orders
+            </a></li>
+            <li><a href="{{ url_for('admin_products') }}" class="active">
+                <i class="fas fa-ice-cream"></i> Products
+            </a></li>
+            <li><a href="{{ url_for('admin_users') }}">
+                <i class="fas fa-users"></i> Users
+            </a></li>
+        </ul>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="admin-main">
+        {% if request.endpoint == 'admin_products' and not request.args.get('add') %}
+        <!-- Products List View -->
+        <div class="admin-top-bar">
+            <h2>Manage Products</h2>
+            <a href="{{ url_for('admin_products') }}?add=1" class="admin-btn admin-btn-primary">
+                <i class="fas fa-plus"></i> Add New Product
+            </a>
+        </div>
+        
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card" data-id="{{ product.id }}">
+                <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+                <div class="product-info">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+                    <div class="product-price">₹{{ product.price }}</div>
+                    <div class="product-actions">
+                        <button class="edit-btn" onclick="editProduct({{ product.id }})">Edit</button>
+                        <button class="delete-btn" onclick="deleteProduct({{ product.id }}, '{{ product.name }}')">Delete</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% else %}
+        <!-- Add/Edit Product Form -->
+        <div class="admin-top-bar">
+            <h2>{% if product_id %}Edit Product{% else %}Add New Product{% endif %}</h2>
+            <a href="{{ url_for('admin_products') }}" class="admin-btn admin-btn-primary">
+                <i class="fas fa-arrow-left"></i> Back to Products
+            </a>
+        </div>
+        
+        <form class="admin-form" id="productForm" method="POST" enctype="multipart/form-data">
+            <div class="admin-form-group">
+                <label for="name">Product Name *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="admin-form-row">
+                <div class="admin-form-group">
+                    <label for="category">Category *</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="fruits">Fruit Based</option>
+                        <option value="creamy">Creamy</option>
+                        <option value="special">Special Edition</option>
+                    </select>
+                </div>
+                
+                <div class="admin-form-group">
+                    <label for="rating">Rating</label>
+                    <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" value="4.5">
+                </div>
+            </div>
+            
+            <div class="admin-form-group">
+                <label for="description">Description *</label>
+                <textarea id="description" name="description" rows="3" required></textarea>
+            </div>
+            
+            <div class="admin-form-row">
+                <div class="admin-form-group">
+                    <label for="price">Price (₹) *</label>
+                    <input type="number" id="price" name="price" step="1" required>
+                </div>
+                
+                <div class="admin-form-group">
+                    <label for="old_price">Old Price (Optional)</label>
+                    <input type="number" id="old_price" name="old_price" step="1">
+                </div>
+            </div>
+            
+            <div class="admin-form-row">
+                <div class="admin-form-group">
+                    <label>
+                        <input type="checkbox" name="veg" checked> Veg
+                    </label>
+                </div>
+                
+                <div class="admin-form-group">
+                    <label>
+                        <input type="checkbox" name="featured"> Featured Product
+                    </label>
+                </div>
+            </div>
+            
+            <div class="admin-form-group">
+                <label>Product Image *</label>
+                <div class="image-upload-container" onclick="document.getElementById('imageInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Click to upload product image</p>
+                    <p style="font-size: 0.8rem; color: #7f8c8d;">PNG, JPG, JPEG (Max 16MB)</p>
+                </div>
+                <input type="file" id="imageInput" name="image" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                <div class="image-preview" id="imagePreview">
+                    <img src="" alt="Preview">
+                </div>
+                <input type="hidden" id="imageUrl" name="image_url">
+            </div>
+            
+            <div class="admin-form-group">
+                <label>Toppings (comma separated)</label>
+                <input type="text" id="toppings" name="toppings" placeholder="Sprinkles, Chocolate Sauce, Strawberry Syrup">
+            </div>
+            
+            <div class="admin-form-group">
+                <label>Cones (comma separated)</label>
+                <input type="text" id="cones" name="cones" placeholder="Waffle Cone, Sugar Cone, Plain Cone">
+            </div>
+            
+            <div class="admin-form-group">
+                <label>Weight Options *</label>
+                <div id="weightOptions">
+                    <div class="weight-option-row">
+                        <input type="text" name="weight[]" placeholder="e.g., 1 scoop" value="1 scoop" required>
+                        <input type="number" name="price[]" placeholder="Price (₹)" required>
+                        <i class="fas fa-times remove-weight" onclick="this.parentElement.remove()"></i>
+                    </div>
+                    <div class="weight-option-row">
+                        <input type="text" name="weight[]" placeholder="e.g., 2 scoops" value="2 scoops">
+                        <input type="number" name="price[]" placeholder="Price (₹)">
+                        <i class="fas fa-times remove-weight" onclick="this.parentElement.remove()"></i>
+                    </div>
+                </div>
+                <button type="button" class="add-weight-btn" onclick="addWeightOption()">
+                    <i class="fas fa-plus"></i> Add Weight Option
+                </button>
+            </div>
+            
+            <div class="admin-form-actions">
+                <button type="submit" class="admin-btn admin-btn-success">
+                    <i class="fas fa-save"></i> Save Product
+                </button>
+                <a href="{{ url_for('admin_products') }}" class="admin-btn admin-btn-primary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+        {% endif %}
+    </main>
+</div>
+
+<script>
+    let currentProductId = null;
+    
+    function addWeightOption() {
+        const container = document.getElementById('weightOptions');
+        const newRow = document.createElement('div');
+        newRow.className = 'weight-option-row';
+        newRow.innerHTML = `
+            <input type="text" name="weight[]" placeholder="e.g., 250g" required>
+            <input type="number" name="price[]" placeholder="Price (₹)" required>
+            <i class="fas fa-times remove-weight" onclick="this.parentElement.remove()"></i>
+        `;
+        container.appendChild(newRow);
+    }
+    
+    function previewImage(input) {
+        const preview = document.getElementById('imagePreview');
+        const previewImg = preview.querySelector('img');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+                // For API, we'll store the image URL
+                document.getElementById('imageUrl').value = e.target.result;
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    function editProduct(id) {
+        // Redirect to edit page
+        window.location.href = `/admin/products/edit/${id}`;
+    }
+    
+    function deleteProduct(id, name) {
+        if (confirm(`Are you sure you want to delete "${name}"?`)) {
+            fetch(`/admin/products/${id}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(() => {
+                    if (typeof showNotification === 'function') {
+                        showNotification(`${name} deleted successfully`, 'success');
+                    } else {
+                        alert(`${name} deleted successfully`);
+                    }
+                    setTimeout(() => location.reload(), 1000);
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Error deleting product');
+                });
+        }
+    }
+    
+    // Handle form submission for adding/editing products
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Collect weight options
+        const weightOptions = [];
+        const weightRows = document.querySelectorAll('.weight-option-row');
+        weightRows.forEach(row => {
+            const weight = row.querySelector('input[name="weight[]"]').value;
+            const price = row.querySelector('input[name="price[]"]').value;
+            if (weight && price) {
+                weightOptions.push({ weight, price: parseInt(price) });
+            }
+        });
+        
+        const productData = {
+            name: document.getElementById('name').value,
+            description: document.getElementById('description').value,
+            price: parseInt(document.getElementById('price').value),
+            old_price: document.getElementById('old_price').value ? parseInt(document.getElementById('old_price').value) : null,
+            category: document.getElementById('category').value,
+            rating: parseFloat(document.getElementById('rating').value),
+            toppings: document.getElementById('toppings').value.split(',').map(s => s.trim()).filter(s => s),
+            cones: document.getElementById('cones').value.split(',').map(s => s.trim()).filter(s => s),
+            weight_options: weightOptions,
+            veg: document.querySelector('input[name="veg"]').checked,
+            featured: document.querySelector('input[name="featured"]').checked,
+            in_stock: true
+        };
+        
+        // Handle image - use uploaded image or URL
+        const imageUrl = document.getElementById('imageUrl').value;
+        const imageFile = document.getElementById('imageInput').files[0];
+        
+        if (imageFile) {
+            // If file uploaded, use the data URL
+            productData.image = imageUrl;
+        } else if (productData.image_url) {
+            productData.image = productData.image_url;
+        } else {
+            productData.image = 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400';
+        }
+        
+        const url = currentProductId ? `/admin/products/${currentProductId}` : '/admin/products/add';
+        const method = currentProductId ? 'PUT' : 'POST';
+        
+        fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(productData)
+        })
+        .then(res => res.json())
+        .then(() => {
+            if (typeof showNotification === 'function') {
+                showNotification(currentProductId ? 'Product updated!' : 'Product added!', 'success');
+            } else {
+                alert(currentProductId ? 'Product updated!' : 'Product added!');
+            }
+            setTimeout(() => {
+                window.location.href = '/admin/products';
+            }, 1000);
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert('Error saving product');
+        });
+    });
+    
+    // Check if we're editing an existing product
+    {% if product_id %}
+    currentProductId = {{ product_id }};
+    // Load product data for editing
+    fetch(`/api/products/{{ product_id }}`)
+        .then(res => res.json())
+        .then(product => {
+            document.getElementById('name').value = product.name;
+            document.getElementById('description').value = product.description;
+            document.getElementById('price').value = product.price;
+            document.getElementById('old_price').value = product.old_price || '';
+            document.getElementById('category').value = product.category;
+            document.getElementById('rating').value = product.rating;
+            document.getElementById('toppings').value = (product.toppings || []).join(', ');
+            document.getElementById('cones').value = (product.cones || []).join(', ');
+            document.querySelector('input[name="veg"]').checked = product.veg !== false;
+            document.querySelector('input[name="featured"]').checked = product.featured || false;
+            
+            // Show image preview
+            if (product.image) {
+                const preview = document.getElementById('imagePreview');
+                const previewImg = preview.querySelector('img');
+                previewImg.src = product.image;
+                preview.style.display = 'block';
+                document.getElementById('imageUrl').value = product.image;
+            }
+            
+            // Load weight options
+            if (product.weight_options && product.weight_options.length) {
+                const container = document.getElementById('weightOptions');
+                container.innerHTML = '';
+                product.weight_options.forEach(opt => {
+                    const newRow = document.createElement('div');
+                    newRow.className = 'weight-option-row';
+                    newRow.innerHTML = `
+                        <input type="text" name="weight[]" placeholder="e.g., 250g" value="${opt.weight}" required>
+                        <input type="number" name="price[]" placeholder="Price (₹)" value="${opt.price}" required>
+                        <i class="fas fa-times remove-weight" onclick="this.parentElement.remove()"></i>
+                    `;
+                    container.appendChild(newRow);
+                });
+            }
+        });
+    {% endif %}
+</script>
+{% endblock %}

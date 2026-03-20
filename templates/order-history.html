@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Order History - Pink Scoops{% endblock %}
+
+{% block extra_css %}
+<style>
+    .history-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+    }
+    
+    .history-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .history-header h1 {
+        font-size: 2.5rem;
+        color: #ff4d6d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .empty-orders {
+        text-align: center;
+        padding: 4rem;
+        background: white;
+        border-radius: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .empty-orders h3 {
+        color: #ff4d6d;
+        margin-bottom: 1rem;
+    }
+    
+    .order-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 1rem;
+    }
+    
+    .order-id {
+        font-weight: bold;
+        color: #ff4d6d;
+    }
+    
+    .order-date {
+        color: #888;
+    }
+    
+    .order-status {
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-confirmed { background: #cce5ff; color: #004085; }
+    .status-preparing { background: #d4edda; color: #155724; }
+    .status-out_for_delivery { background: #d1ecf1; color: #0c5460; }
+    .status-delivered { background: #d4edda; color: #155724; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+    
+    .order-items {
+        margin-bottom: 1rem;
+    }
+    
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed #eee;
+    }
+    
+    .order-total {
+        text-align: right;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #ff4d6d;
+        margin-top: 1rem;
+    }
+    
+    .reorder-btn {
+        background: #ff4d6d;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 30px;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="history-container">
+    <div class="history-header">
+        <h1>
+            <i class="fas fa-history"></i>
+            Order History
+        </h1>
+        <p>View and reorder your past orders</p>
+    </div>
+    
+    <div id="ordersList" class="orders-list">
+        <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading your orders...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function loadOrders() {
+        const container = document.getElementById('ordersList');
+        
+        try {
+            const response = await fetch('/api/orders/user');
+            const orders = await response.json();
+            
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-orders">
+                        <div class="empty-icon">📦</div>
+                        <h3>No orders yet</h3>
+                        <p>Looks like you haven't placed any orders yet.</p>
+                        <a href="/menu" class="btn-primary" style="display: inline-block; margin-top: 1rem;">Browse Menu</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = orders.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <span class="order-id">Order #${order.orderId}</span>
+                        <span class="order-date">${new Date(order.orderDate).toLocaleDateString()}</span>
+                        <span class="order-status status-${order.status}">${order.status.replace('_', ' ').toUpperCase()}</span>
+                    </div>
+                    <div class="order-items">
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <span>${item.flavor} x ${item.qty}</span>
+                                <span>₹${item.price * item.qty}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="order-total">
+                        Total: ₹${order.pricing.total}
+                    </div>
+                    ${order.status !== 'cancelled' ? `
+                        <button class="reorder-btn" onclick="reorder('${order.orderId}')">
+                            <i class="fas fa-redo-alt"></i> Reorder
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+        } catch(e) {
+            console.error('Error loading orders:', e);
+            container.innerHTML = `
+                <div class="empty-orders">
+                    <h3>Error loading orders</h3>
+                    <p>Please try again later.</p>
+                </div>
+            `;
+        }
+    }
+    
+    function reorder(orderId) {
+        // Find the order and add items to cart
+        fetch('/api/orders/user')
+            .then(res => res.json())
+            .then(orders => {
+                const order = orders.find(o => o.orderId === orderId);
+                if (order && order.items) {
+                    order.items.forEach(item => {
+                        if (typeof window.addToCart === 'function') {
+                            window.addToCart(item);
+                        }
+                    });
+                    showNotification('Items added to cart!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/order';
+                    }, 1500);
+                }
+            });
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadOrders);
+</script>
+{% endblock %}

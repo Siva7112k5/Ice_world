@@ -18,7 +18,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(circle at 10% 30%, var(--soft-pink), #ffffff);
+   /* Home Page Specific Styles */
+.hero {
+    background: radial-gradient(circle at 10% 30%, #fff0f3, #ffffff);
+}
+
+/* Add any additional home-specific styles here */
     overflow: hidden;
 }
 

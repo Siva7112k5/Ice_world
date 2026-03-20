@@ -1,0 +1,68 @@
+[
+  {
+    "orderId": "ORD-20260320-0001",
+    "orderDate": "2026-03-20T17:50:25.534485",
+    "customer": {
+      "fullName": "siva",
+      "phoneNumber": "9043345140",
+      "email": "ksivakannan2005@gmail.com",
+      "deliveryAddress": "thovalai",
+      "city": "kanyakumari , thovalai",
+      "pincode": "629302",
+      "paymentMethod": "cod"
+    },
+    "items": [
+      {
+        "id": "1774009200008_tbds7",
+        "flavor": "Strawberry Bliss",
+        "price": 159,
+        "topping": "Sprinkles",
+        "cone": "Waffle",
+        "qty": 1,
+        "image": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400",
+        "addedAt": "2026-03-20T12:20:00.008Z"
+      }
+    ],
+    "pricing": {
+      "subtotal": 159,
+      "delivery": 49,
+      "tax": 8,
+      "discount": 0,
+      "total": 216
+    },
+    "status": "confirmed"
+  },
+  {
+    "orderId": "ORD-20260320-0002",
+    "orderDate": "2026-03-20T18:14:35.301651",
+    "customer": {
+      "fullName": "siva",
+      "phoneNumber": "9043345140",
+      "email": "ksiva2005@gmail.com",
+      "deliveryAddress": "thovalai",
+      "city": "kanyakumari , thovalai",
+      "pincode": "629302",
+      "paymentMethod": "cod"
+    },
+    "items": [
+      {
+        "flavor": "Strawberry Bliss",
+        "image": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400",
+        "topping": "Sprinkles",
+        "cone": "Waffle Cone",
+        "qty": 1,
+        "price": 159,
+        "id": "1774010644300_vz1dl",
+        "addedAt": "2026-03-20T12:44:04.300Z"
+      }
+    ],
+    "pricing": {
+      "subtotal": 159,
+      "delivery": 49,
+      "tax": 8,
+      "discount": 0,
+      "total": 216
+    },
+    "status": "pending"
+  }
+]
