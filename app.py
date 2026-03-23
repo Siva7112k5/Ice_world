@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 from functools import wraps
 import json
 import os
@@ -553,7 +553,6 @@ def load_data(filepath):
 
 def init_data_files():
     if not os.path.exists(PRODUCTS_FILE):
-        # Save all 40 products
         save_data(PRODUCTS_FILE, ALL_PRODUCTS)
         print(f"✅ Created products.json with {len(ALL_PRODUCTS)} products")
     else:
@@ -583,6 +582,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user' not in session:
+            flash('Please login to access this page', 'warning')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -591,6 +591,7 @@ def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user' not in session or session['user'].get('role') != 'admin':
+            flash('Admin access required', 'danger')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -604,7 +605,6 @@ def index():
 @app.route('/menu')
 def menu():
     products = load_data(PRODUCTS_FILE)
-    print(f"📊 Menu loaded with {len(products)} products")  # Debug print
     return render_template('menu.html', products=products)
 
 @app.route('/order')
@@ -633,17 +633,21 @@ def login():
                 'id': user['id'],
                 'username': user['username'],
                 'role': user['role'],
-                'full_name': user['full_name']
+                'full_name': user['full_name'],
+                'email': user.get('email', ''),
+                'phone': user.get('phone', '')
             }
+            flash(f'Welcome back, {user["full_name"]}!', 'success')
             return redirect(url_for('index'))
         else:
-            return render_template('login.html', error='Invalid credentials')
+            flash('Invalid username or password', 'danger')
     
     return render_template('login.html')
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
+    flash('Logged out successfully', 'info')
     return redirect(url_for('index'))
 
 @app.route('/order-history')
@@ -671,22 +675,43 @@ def get_product(product_id):
 
 @app.route('/api/orders', methods=['POST'])
 def create_order():
-    order_data = request.json
-    orders = load_data(ORDERS_FILE)
-    
-    new_order = {
-        'orderId': f"ORD-{datetime.now().strftime('%Y%m%d')}-{len(orders)+1:04d}",
-        'orderDate': datetime.now().isoformat(),
-        'customer': order_data.get('customer'),
-        'items': order_data.get('items'),
-        'pricing': order_data.get('pricing'),
-        'status': 'pending'
-    }
-    
-    orders.append(new_order)
-    save_data(ORDERS_FILE, orders)
-    
-    return jsonify(new_order)
+    try:
+        order_data = request.json
+        orders = load_data(ORDERS_FILE)
+        
+        # Get user ID from session if logged in
+        user_id = session.get('user', {}).get('id')
+        username = session.get('user', {}).get('username', 'Guest')
+        
+        new_order = {
+            'orderId': f"ORD-{datetime.now().strftime('%Y%m%d')}-{len(orders)+1:04d}",
+            'orderDate': datetime.now().isoformat(),
+            'userId': user_id,  # Store user ID for filtering
+            'customer': {
+                'userId': user_id,
+                'username': username,
+                'fullName': order_data.get('customer', {}).get('fullName', username),
+                'phoneNumber': order_data.get('customer', {}).get('phoneNumber', ''),
+                'email': order_data.get('customer', {}).get('email', ''),
+                'deliveryAddress': order_data.get('customer', {}).get('deliveryAddress', ''),
+                'city': order_data.get('customer', {}).get('city', ''),
+                'pincode': order_data.get('customer', {}).get('pincode', ''),
+                'paymentMethod': order_data.get('customer', {}).get('paymentMethod', 'COD')
+            },
+            'items': order_data.get('items', []),
+            'pricing': order_data.get('pricing', {}),
+            'status': 'pending',
+            'special_instructions': order_data.get('special_instructions', '')
+        }
+        
+        orders.append(new_order)
+        save_data(ORDERS_FILE, orders)
+        
+        return jsonify(new_order), 201
+        
+    except Exception as e:
+        print(f"Error creating order: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/orders', methods=['GET'])
 @admin_required
@@ -698,7 +723,14 @@ def get_all_orders():
 @login_required
 def get_user_orders():
     orders = load_data(ORDERS_FILE)
-    user_orders = [o for o in orders if o['customer'].get('userId') == session['user']['id']]
+    user_id = session['user']['id']
+    
+    # Filter orders by user ID
+    user_orders = [o for o in orders if o.get('userId') == user_id or o.get('customer', {}).get('userId') == user_id]
+    
+    # Sort by date (newest first)
+    user_orders.sort(key=lambda x: x.get('orderDate', ''), reverse=True)
+    
     return jsonify(user_orders)
 
 # Admin Routes
@@ -776,7 +808,12 @@ def register():
         email = request.form.get('email')
         phone = request.form.get('phone')
         password = request.form.get('password')
+        confirm_password = request.form.get('confirmPassword')
         city = request.form.get('city', '')
+        
+        # Validate password match
+        if password != confirm_password:
+            return render_template('register.html', error='Passwords do not match')
         
         users = load_data(USERS_FILE)
         
@@ -804,9 +841,10 @@ def register():
         users.append(new_user)
         save_data(USERS_FILE, users)
         
-        return render_template('register.html', success='Account created successfully! Please login.')
+        flash('Account created successfully! Please login.', 'success')
+        return redirect(url_for('login'))
     
-    return render_template('register.html')    
+    return render_template('register.html')
 
 @app.route('/admin/products/edit/<int:product_id>')
 @admin_required
@@ -814,8 +852,9 @@ def edit_product(product_id):
     products = load_data(PRODUCTS_FILE)
     product = next((p for p in products if p['id'] == product_id), None)
     if not product:
+        flash('Product not found', 'danger')
         return redirect(url_for('admin_products'))
-    return render_template('admin/edit_product.html', product_id=product_id)    
+    return render_template('admin/edit_product.html', product=product)
 
 @app.route('/admin/orders/<order_id>', methods=['PUT'])
 @admin_required

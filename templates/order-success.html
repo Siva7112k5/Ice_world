@@ -55,6 +55,23 @@
         border-bottom: 1px solid #eee;
     }
     
+    .order-row:last-child {
+        border-bottom: none;
+    }
+    
+    .items-list {
+        margin-top: 1rem;
+        border-top: 1px solid #eee;
+        padding-top: 1rem;
+    }
+    
+    .item-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+    }
+    
     .action-buttons {
         display: flex;
         gap: 1rem;
@@ -94,6 +111,20 @@
         text-align: center;
         padding: 3rem;
     }
+    
+    .loading i {
+        font-size: 3rem;
+        color: #ff4d6d;
+        margin-bottom: 1rem;
+    }
+    
+    .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
 </style>
 {% endblock %}
 
@@ -116,10 +147,6 @@
                     <strong id="orderDateDisplay">-</strong>
                 </div>
                 <div class="order-row">
-                    <span>Total Amount:</span>
-                    <strong id="orderTotalDisplay">-</strong>
-                </div>
-                <div class="order-row">
                     <span>Payment Method:</span>
                     <strong id="paymentMethodDisplay">-</strong>
                 </div>
@@ -127,13 +154,23 @@
                     <span>Delivery Address:</span>
                     <strong id="addressDisplay">-</strong>
                 </div>
+                
+                <div class="items-list">
+                    <h4>Items Ordered</h4>
+                    <div id="itemsListDisplay"></div>
+                </div>
+                
+                <div class="order-row" style="margin-top: 1rem; border-top: 2px solid #ff4d6d; padding-top: 1rem;">
+                    <span style="font-weight: bold;">Total Amount:</span>
+                    <strong id="orderTotalDisplay" style="color: #ff4d6d; font-size: 1.2rem;">-</strong>
+                </div>
             </div>
             
             <div class="action-buttons">
-                <a href="/menu" class="btn-primary">
+                <a href="{{ url_for('menu') }}" class="btn-primary">
                     <i class="fas fa-ice-cream"></i> Continue Shopping
                 </a>
-                <a href="/order-history" class="btn-secondary">
+                <a href="{{ url_for('order_history') }}" class="btn-secondary">
                     <i class="fas fa-history"></i> View Orders
                 </a>
             </div>
@@ -144,47 +181,143 @@
         <i class="fas fa-spinner fa-spin"></i>
         <p>Loading order details...</p>
     </div>
+    
+    <div id="errorState" class="loading" style="display: none;">
+        <i class="fas fa-exclamation-circle" style="color: #d63031;"></i>
+        <p>No order found. Please place an order first.</p>
+        <a href="{{ url_for('menu') }}" class="btn-primary" style="display: inline-block; margin-top: 1rem;">Browse Menu</a>
+    </div>
 </div>
 
 <script>
     async function loadOrderDetails() {
+        console.log('Loading order details...');
+        
+        // Get order ID from URL parameter
         const urlParams = new URLSearchParams(window.location.search);
         let orderId = urlParams.get('order');
         
+        console.log('Order ID from URL:', orderId);
+        
+        // If no order ID in URL, try to get from sessionStorage
         if (!orderId) {
             orderId = sessionStorage.getItem('lastOrderId');
+            console.log('Order ID from sessionStorage:', orderId);
+        }
+        
+        // If still no order ID, try to get from localStorage
+        if (!orderId) {
+            const lastOrder = localStorage.getItem('lastOrder');
+            if (lastOrder) {
+                try {
+                    const order = JSON.parse(lastOrder);
+                    orderId = order.orderId;
+                    console.log('Order ID from localStorage:', orderId);
+                } catch(e) {}
+            }
         }
         
         if (!orderId) {
+            console.log('No order ID found');
             document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('orderContent').style.display = 'block';
-            document.getElementById('orderIdDisplay').textContent = 'Not found';
+            document.getElementById('errorState').style.display = 'block';
             return;
         }
         
         try {
-            const response = await fetch('/api/orders');
-            const orders = await response.json();
-            const order = orders.find(o => o.orderId === orderId);
-            
-            if (order) {
-                document.getElementById('orderIdDisplay').textContent = order.orderId;
-                document.getElementById('orderDateDisplay').textContent = new Date(order.orderDate).toLocaleString();
-                document.getElementById('orderTotalDisplay').textContent = `₹${order.pricing.total}`;
-                document.getElementById('paymentMethodDisplay').textContent = order.customer.paymentMethod.toUpperCase();
-                document.getElementById('addressDisplay').textContent = `${order.customer.deliveryAddress}, ${order.customer.city} - ${order.customer.pincode}`;
+            // First try to get from localStorage (if user just placed order)
+            const lastOrder = localStorage.getItem('lastOrder');
+            if (lastOrder) {
+                try {
+                    const order = JSON.parse(lastOrder);
+                    if (order.orderId === orderId) {
+                        console.log('Displaying order from localStorage');
+                        displayOrder(order);
+                        return;
+                    }
+                } catch(e) {}
             }
             
-            document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('orderContent').style.display = 'block';
+            // If not in localStorage, fetch from API
+            console.log('Fetching from API...');
+            const response = await fetch('/api/orders');
+            if (!response.ok) {
+                throw new Error('Failed to fetch orders');
+            }
+            
+            const orders = await response.json();
+            console.log('All orders:', orders);
+            
+            // Find the specific order
+            const order = orders.find(o => o.orderId === orderId);
+            console.log('Found order:', order);
+            
+            if (order) {
+                displayOrder(order);
+                // Save to localStorage for future reference
+                localStorage.setItem('lastOrder', JSON.stringify(order));
+            } else {
+                throw new Error('Order not found');
+            }
             
         } catch(e) {
             console.error('Error loading order:', e);
             document.getElementById('loadingState').style.display = 'none';
-            document.getElementById('orderContent').style.display = 'block';
+            document.getElementById('errorState').style.display = 'block';
         }
     }
     
+    function displayOrder(order) {
+        console.log('Displaying order:', order);
+        
+        // Format date
+        const orderDate = new Date(order.orderDate);
+        const formattedDate = orderDate.toLocaleString('en-IN', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        // Get customer details
+        const customer = order.customer || {};
+        const paymentMethod = customer.paymentMethod || 'COD';
+        const deliveryAddress = customer.deliveryAddress || 'Address not provided';
+        const city = customer.city || '';
+        const pincode = customer.pincode || '';
+        const fullAddress = city && pincode ? `${deliveryAddress}, ${city} - ${pincode}` : deliveryAddress;
+        
+        // Display basic info
+        document.getElementById('orderIdDisplay').textContent = order.orderId;
+        document.getElementById('orderDateDisplay').textContent = formattedDate;
+        document.getElementById('paymentMethodDisplay').textContent = paymentMethod.toUpperCase();
+        document.getElementById('addressDisplay').textContent = fullAddress;
+        document.getElementById('orderTotalDisplay').textContent = `₹${order.pricing?.total || 0}`;
+        
+        // Display items
+        const itemsList = document.getElementById('itemsListDisplay');
+        if (order.items && order.items.length > 0) {
+            itemsList.innerHTML = order.items.map(item => `
+                <div class="item-row">
+                    <span>${item.flavor} x ${item.qty}</span>
+                    <span>₹${(item.price * item.qty).toFixed(2)}</span>
+                </div>
+            `).join('');
+        } else {
+            itemsList.innerHTML = '<div class="item-row">No items found</div>';
+        }
+        
+        // Show content, hide loading
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('orderContent').style.display = 'block';
+        document.getElementById('errorState').style.display = 'none';
+        
+        // Clear the sessionStorage order ID after displaying
+        sessionStorage.removeItem('lastOrderId');
+    }
+    
+    // Initialize on page load
     document.addEventListener('DOMContentLoaded', loadOrderDetails);
 </script>
 {% endblock %}
